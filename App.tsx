@@ -174,8 +174,10 @@ const App: React.FC = () => {
              <Editor data={resumeData} onChange={setResumeData} resumeName={resumeName} />
         </div>
 
-        {/* Print Only Preview - Hidden from screen, visible on print */}
-        <div className="hidden print-only absolute top-0 left-0 w-full h-full bg-white z-50">
+        {/* Print Only Preview - Hidden from screen, visible on print. 
+            Removed absolute positioning here to allow natural document flow in print mode 
+        */}
+        <div className="hidden print-only bg-white z-50">
             <Preview data={resumeData} />
         </div>
       </main>

@@ -2,9 +2,11 @@ import { GoogleGenAI } from "@google/genai";
 import { ResumeData } from '../types';
 
 const getClient = () => {
+  // Use process.env.API_KEY exclusively as per guidelines.
+  // Assume it is configured and available in the environment.
   const apiKey = process.env.API_KEY;
   if (!apiKey) {
-    throw new Error("API Key not found in environment variables");
+    throw new Error("API Key not found. Please ensure process.env.API_KEY is set.");
   }
   return new GoogleGenAI({ apiKey });
 };
