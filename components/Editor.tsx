@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ResumeData, ExperienceItem, EducationItem, ProjectItem, VolunteeringItem } from '../types';
-import { Plus, Trash2, Wand2, ChevronRight, ChevronLeft, ArrowRight, User, Briefcase, GraduationCap, Lightbulb, Rocket, Upload, Eye, Award, Share2, Download, Printer, Mail, HeartHandshake, ZoomIn, ZoomOut, RotateCcw, CircleHelp, X, Hand } from 'lucide-react';
+import { Plus, Trash2, Wand2, ChevronRight, ChevronLeft, ArrowRight, User, Briefcase, GraduationCap, Lightbulb, Rocket, Upload, Eye, Award, Share2, Download, Printer, Mail, HeartHandshake, ZoomIn, ZoomOut, RotateCcw, HelpCircle, X, Hand } from 'lucide-react';
 import { enhanceDescription, generateResumeSummary, suggestSkills } from '../services/geminiService';
 import { Preview } from './Preview';
 import { RichTextEditor } from './RichTextEditor';
@@ -506,7 +506,7 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                                 <span className="ml-3 text-sm font-medium text-slate-700 dark:text-slate-300 select-none">Include Photo</span>
                             </label>
                             <button onClick={() => setShowPhotoAdvice(true)} className="text-slate-400 hover:text-blue-600 dark:text-slate-500 dark:hover:text-blue-400 transition-colors" title="Should I include a photo?">
-                                <CircleHelp size={16} />
+                                <HelpCircle size={16} />
                             </button>
                         </div>
                       </div>
