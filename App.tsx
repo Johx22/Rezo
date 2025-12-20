@@ -4,10 +4,12 @@ import { INITIAL_RESUME_STATE } from './constants';
 import { Editor } from './components/Editor';
 import { Preview } from './components/Preview';
 import { Background } from './components/Background';
+import { LandingPage } from './components/LandingPage';
 import { Moon, Sun, ChevronDown, Pencil, Check, X, User, LogIn, UserPlus, Info, FileJson } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
-const App: React.FC = () => {
+// --- Main Editor Component (The actual App) ---
+const ResumeEditor: React.FC = () => {
   const [resumeData, setResumeData] = useState<ResumeData>(INITIAL_RESUME_STATE);
   const [resumeName, setResumeName] = useState("Untitled Resume");
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -297,6 +299,17 @@ const App: React.FC = () => {
 
     </div>
   );
+};
+
+// --- App Wrapper with Routing ---
+const App: React.FC = () => {
+    const [showEditor, setShowEditor] = useState(false);
+
+    if (!showEditor) {
+        return <LandingPage onStart={() => setShowEditor(true)} />;
+    }
+
+    return <ResumeEditor />;
 };
 
 export default App;
