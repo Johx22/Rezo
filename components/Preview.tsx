@@ -1,0 +1,251 @@
+import React from 'react';
+import { ResumeData } from '../types';
+import { Mail, Phone, MapPin, Globe, Linkedin, Link as LinkIcon, Github } from 'lucide-react';
+
+interface PreviewProps {
+  data: ResumeData;
+  scale?: number;
+}
+
+export const Preview: React.FC<PreviewProps> = ({ data, scale = 1 }) => {
+  const hasProfilePicture = data.personalInfo.showProfilePicture && data.personalInfo.profilePicture;
+
+  return (
+    <div 
+        className="bg-white shadow-2xl print:shadow-none mx-auto origin-top transition-transform duration-200 print:!w-full print:!h-auto print:!m-0 print:!transform-none"
+        style={{ 
+            width: '210mm', 
+            minHeight: '297mm',
+            transform: `scale(${scale})`,
+            marginBottom: `${(scale - 1) * 297}mm` 
+        }}
+    >
+        {/* Header */}
+        <div className="px-8 py-10 bg-slate-900 text-white print:bg-slate-900 print:text-white print-color-adjust-exact">
+            <div className={`flex ${hasProfilePicture ? 'gap-8 items-center' : ''}`}>
+                
+                {hasProfilePicture && (
+                    <div className="shrink-0">
+                        <img 
+                            src={data.personalInfo.profilePicture} 
+                            alt={data.personalInfo.fullName} 
+                            className="w-32 h-32 rounded-full object-cover border-4 border-slate-700 shadow-xl"
+                        />
+                    </div>
+                )}
+
+                <div className="flex-1">
+                    <h1 className="text-4xl font-bold tracking-tight mb-2 uppercase">{data.personalInfo.fullName}</h1>
+                    <p className="text-lg text-blue-200 font-medium tracking-wide mb-6">{data.personalInfo.title}</p>
+                    
+                    <div className="flex flex-wrap gap-4 text-sm text-slate-300">
+                        {data.personalInfo.email && (
+                            <div className="flex items-center gap-1.5">
+                                <Mail size={14} className="stroke-blue-400" />
+                                <span>{data.personalInfo.email}</span>
+                            </div>
+                        )}
+                        {data.personalInfo.phone && (
+                            <div className="flex items-center gap-1.5">
+                                <Phone size={14} className="stroke-blue-400" />
+                                <span>{data.personalInfo.phone}</span>
+                            </div>
+                        )}
+                        {data.personalInfo.location && (
+                            <div className="flex items-center gap-1.5">
+                                <MapPin size={14} className="stroke-blue-400" />
+                                <span>{data.personalInfo.location}</span>
+                            </div>
+                        )}
+                        {data.personalInfo.linkedin && (
+                            <div className="flex items-center gap-1.5">
+                                <Linkedin size={14} className="stroke-blue-400" />
+                                <span>{data.personalInfo.linkedin}</span>
+                            </div>
+                        )}
+                        {data.personalInfo.github && (
+                            <div className="flex items-center gap-1.5">
+                                <Github size={14} className="stroke-blue-400" />
+                                <span>{data.personalInfo.github}</span>
+                            </div>
+                        )}
+                        {data.personalInfo.website && (
+                            <div className="flex items-center gap-1.5">
+                                <Globe size={14} className="stroke-blue-400" />
+                                <span>{data.personalInfo.website}</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-8 space-y-6 text-slate-800">
+            
+            {/* Summary */}
+            {data.personalInfo.showSummary && data.summary && (
+                <section className="print:break-inside-avoid">
+                    <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b-2 border-slate-200 pb-1 mb-3">Professional Summary</h2>
+                    <p className="text-sm leading-relaxed text-slate-700 whitespace-pre-wrap">{data.summary}</p>
+                </section>
+            )}
+
+            {/* Experience */}
+            {data.experience.length > 0 && (
+                <section className="print:break-inside-avoid">
+                    <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b-2 border-slate-200 pb-1 mb-4">Experience</h2>
+                    <div className="space-y-5">
+                        {data.experience.map((exp) => (
+                            <div key={exp.id} className="break-inside-avoid">
+                                <div className="flex justify-between items-baseline mb-1">
+                                    <h3 className="font-bold text-slate-800">{exp.position}</h3>
+                                    <span className="text-xs font-medium text-slate-500 whitespace-nowrap">
+                                        {exp.startDate} – {exp.current ? 'Present' : exp.endDate}
+                                    </span>
+                                </div>
+                                <div className="text-sm font-semibold text-blue-700 mb-2">{exp.company}</div>
+                                <div 
+                                    className="text-sm text-slate-600 leading-relaxed pl-1 [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_li]:mb-1"
+                                    dangerouslySetInnerHTML={{ __html: exp.description }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* Education */}
+            {data.education.length > 0 && (
+                <section className="print:break-inside-avoid">
+                    <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b-2 border-slate-200 pb-1 mb-3">Education</h2>
+                    <div className="space-y-3">
+                        {data.education.map((edu) => (
+                            <div key={edu.id} className="break-inside-avoid">
+                                <div className="flex justify-between items-baseline">
+                                    <h3 className="font-bold text-slate-800">{edu.school}</h3>
+                                    <span className="text-xs font-medium text-slate-500">{edu.graduationDate}</span>
+                                </div>
+                                <div className="text-sm text-slate-600 mb-1">
+                                    {edu.degree} {edu.field && `in ${edu.field}`}
+                                </div>
+                                {edu.description && (
+                                    <div 
+                                        className="text-sm text-slate-600 leading-relaxed pl-1 [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_li]:mb-1"
+                                        dangerouslySetInnerHTML={{ __html: edu.description }}
+                                    />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* Volunteering */}
+            {data.volunteering && data.volunteering.length > 0 && (
+                <section className="print:break-inside-avoid">
+                    <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b-2 border-slate-200 pb-1 mb-3">Volunteering</h2>
+                    <div className="space-y-4">
+                        {data.volunteering.map((vol) => (
+                            <div key={vol.id} className="break-inside-avoid">
+                                <div className="flex justify-between items-baseline mb-1">
+                                    <h3 className="font-bold text-slate-800">{vol.role}</h3>
+                                    <span className="text-xs font-medium text-slate-500 whitespace-nowrap">
+                                        {vol.startDate} – {vol.current ? 'Present' : vol.endDate}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center mb-1">
+                                    <div className="text-sm font-semibold text-blue-700">{vol.organization}</div>
+                                    <div className="text-xs text-slate-500">{vol.location}</div>
+                                </div>
+                                {vol.description && (
+                                    <div 
+                                        className="text-sm text-slate-600 leading-relaxed pl-1 [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_li]:mb-1"
+                                        dangerouslySetInnerHTML={{ __html: vol.description }}
+                                    />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* Certifications */}
+            {data.certifications && data.certifications.length > 0 && (
+                <section className="print:break-inside-avoid">
+                    <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b-2 border-slate-200 pb-1 mb-3">Certifications</h2>
+                    <ul className="list-disc list-inside space-y-1 text-sm text-slate-700">
+                        {data.certifications.map((cert, index) => (
+                            <li key={index} className="leading-relaxed">{cert}</li>
+                        ))}
+                    </ul>
+                </section>
+            )}
+
+            {/* Projects */}
+            {data.projects && data.projects.length > 0 && (
+                <section className="print:break-inside-avoid">
+                    <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b-2 border-slate-200 pb-1 mb-3">Projects</h2>
+                    <div className="space-y-4">
+                        {data.projects.map((proj) => (
+                            <div key={proj.id} className="break-inside-avoid">
+                                <div className="flex justify-between items-baseline mb-1">
+                                    <h3 className="font-bold text-slate-800">{proj.name}</h3>
+                                    {/* Optional Date Range */}
+                                    {(proj.startDate || proj.endDate) && (
+                                        <span className="text-xs font-medium text-slate-500 whitespace-nowrap">
+                                            {proj.startDate} {proj.startDate && proj.endDate && '–'} {proj.endDate}
+                                        </span>
+                                    )}
+                                </div>
+                                {proj.link && (
+                                    <div className="flex items-center gap-1.5 mb-2">
+                                        <LinkIcon size={12} className="text-blue-500" />
+                                        <a href={`https://${proj.link.replace(/^https?:\/\//, '')}`} target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:underline">
+                                            {proj.link}
+                                        </a>
+                                    </div>
+                                )}
+                                {proj.description && (
+                                     <div 
+                                        className="text-sm text-slate-600 leading-relaxed pl-1 [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_li]:mb-1"
+                                        dangerouslySetInnerHTML={{ __html: proj.description }}
+                                    />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* Skills */}
+            {data.skills.length > 0 && (
+                <section className="print:break-inside-avoid">
+                    <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b-2 border-slate-200 pb-1 mb-3">Skills</h2>
+                    <div className="flex flex-wrap gap-2">
+                        {data.skills.map((skill, index) => (
+                            <span key={index} className="px-2 py-1 bg-slate-100 text-slate-700 text-xs font-medium rounded print:border print:border-slate-200">
+                                {skill}
+                            </span>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+             {/* Languages */}
+            {(data.languages || []).length > 0 && (
+                <section className="print:break-inside-avoid">
+                    <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b-2 border-slate-200 pb-1 mb-3">Languages</h2>
+                    <div className="flex flex-wrap gap-2">
+                        {(data.languages || []).map((lang, index) => (
+                            <span key={index} className="px-2 py-1 bg-slate-100 text-slate-700 text-xs font-medium rounded print:border print:border-slate-200">
+                                {lang}
+                            </span>
+                        ))}
+                    </div>
+                </section>
+            )}
+        </div>
+    </div>
+  );
+};
