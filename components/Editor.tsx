@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ResumeData, ExperienceItem, EducationItem, ProjectItem, VolunteeringItem, InternshipItem } from '../types';
-import { Plus, Trash2, Wand2, ChevronRight, ChevronLeft, ArrowRight, User, Briefcase, GraduationCap, Lightbulb, Rocket, Upload, Eye, Award, Share2, Download, Printer, ZoomIn, ZoomOut, RotateCcw, HelpCircle, X, Hand, LayoutTemplate, ArrowUp, ArrowDown, FilePlus, FileMinus, Move, Building } from 'lucide-react';
+import { Plus, Trash2, Wand2, ChevronRight, ChevronLeft, ArrowRight, User, Briefcase, GraduationCap, Lightbulb, Rocket, Upload, Eye, Award, Share2, Download, Printer, ZoomIn, ZoomOut, RotateCcw, HelpCircle, X, Hand, LayoutTemplate, ArrowUp, ArrowDown, FilePlus, FileMinus, Move, Building, FileJson } from 'lucide-react';
 import { enhanceDescription, generateResumeSummary, suggestSkills } from '../services/geminiService';
 import { Preview } from './Preview';
 import { RichTextEditor } from './RichTextEditor';
@@ -442,6 +442,19 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
     setTimeout(() => {
         document.title = originalTitle; // Revert title
     }, 500);
+  };
+
+  // JSON Export Handler
+  const handleExportJson = () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${resumeName || 'resume'}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const handleGenerateSummary = async () => {
@@ -1174,6 +1187,14 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                                   <Download size={18} /> Download PDF
                               </button>
                               
+                              {/* Export JSON */}
+                              <button 
+                                onClick={handleExportJson}
+                                className="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
+                              >
+                                  <FileJson size={18} /> Export JSON
+                              </button>
+
                               {/* Print */}
                               <button onClick={triggerPrint} className="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
                                   <Printer size={18} /> Print

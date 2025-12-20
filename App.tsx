@@ -4,7 +4,7 @@ import { INITIAL_RESUME_STATE } from './constants';
 import { Editor } from './components/Editor';
 import { Preview } from './components/Preview';
 import { Background } from './components/Background';
-import { Moon, Sun, ChevronDown, Pencil, Check, X, User, LogIn, UserPlus, Info } from 'lucide-react';
+import { Moon, Sun, ChevronDown, Pencil, Check, X, User, LogIn, UserPlus, Info, FileJson } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const App: React.FC = () => {
@@ -16,6 +16,7 @@ const App: React.FC = () => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [tempName, setTempName] = useState("");
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // User Menu State
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -60,9 +61,52 @@ const App: React.FC = () => {
     setShowFeaturePopup(true);
   };
 
+  // JSON Import Handlers
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const parsedData = JSON.parse(content);
+        
+        // Basic validation: Check if it has essential keys of ResumeData
+        if (parsedData && typeof parsedData === 'object' && 'personalInfo' in parsedData) {
+           setResumeData(parsedData);
+           // Optional: You could also update the resume name based on the file name
+           // const fileName = file.name.replace('.json', '');
+           // setResumeName(fileName);
+        } else {
+           alert("Invalid JSON format: Missing resume data structure.");
+        }
+      } catch (error) {
+        console.error("Error parsing JSON:", error);
+        alert("Failed to parse JSON file.");
+      }
+    };
+    reader.readAsText(file);
+    // Reset value to allow selecting the same file again if needed
+    event.target.value = '';
+  };
+
   return (
     <div className="h-screen flex flex-col overflow-hidden relative font-sans text-slate-900 dark:text-slate-200 transition-colors duration-300 print:h-auto print:overflow-visible">
       
+      {/* Hidden File Input for Import */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        className="hidden"
+        accept=".json"
+      />
+
       {/* Live Animated Background */}
       <div className="no-print">
          <Background />
@@ -132,6 +176,16 @@ const App: React.FC = () => {
         {/* Right: Actions & User Info */}
         <div className="flex items-center justify-end gap-2 sm:gap-4 w-[200px] lg:w-[280px]">
             
+            {/* Import JSON Button */}
+            <button 
+                onClick={handleImportClick}
+                className="flex items-center gap-2 px-3 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-sm font-medium"
+                title="Import JSON Data"
+            >
+                <FileJson size={18} />
+                <span className="hidden lg:inline">Import</span>
+            </button>
+
             {/* Theme Switcher */}
             <button 
                 onClick={toggleTheme}
