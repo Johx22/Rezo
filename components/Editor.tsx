@@ -975,8 +975,17 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                                               Empty Page
                                           </div>
                                       )}
+                                      <AnimatePresence mode="popLayout">
                                       {pageSections.map((sectionId, sectionIndex) => (
-                                          <div key={sectionId} className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between group">
+                                          <motion.div 
+                                              layout
+                                              key={sectionId}
+                                              initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                                              exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+                                              transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                                              className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between group"
+                                          >
                                               <span className="font-medium text-slate-700 dark:text-slate-200 text-sm">
                                                   {SECTION_LABELS[sectionId] || sectionId}
                                               </span>
@@ -1022,8 +1031,9 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                                                       </button>
                                                   </div>
                                               </div>
-                                          </div>
+                                          </motion.div>
                                       ))}
+                                      </AnimatePresence>
                                   </div>
                               </motion.div>
                           ))}
@@ -1066,7 +1076,7 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
               </AnimatePresence>
             </div>
 
-            {/* Right Column: Small Preview (Desktop Only) */}
+            {/* Right Column: Small Preview (Desktop Only) remains same */}
             <div className="hidden xl:block w-[400px] shrink-0">
                <div className="sticky top-6">
                   <div className="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm p-2 rounded-xl border border-slate-300 dark:border-slate-700 shadow-lg dark:shadow-xl transition-colors">
