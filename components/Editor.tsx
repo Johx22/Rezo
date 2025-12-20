@@ -223,7 +223,7 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
       current: false,
       description: ''
     };
-    onChange({ ...data, experience: [newExp, ...data.experience] });
+    onChange({ ...data, experience: [...data.experience, newExp] });
   };
 
   const removeExperience = (id: string) => {
@@ -245,7 +245,7 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
       field: '',
       graduationDate: ''
     };
-    onChange({ ...data, education: [newEdu, ...data.education] });
+    onChange({ ...data, education: [...data.education, newEdu] });
   };
 
   const removeEducation = (id: string) => {
@@ -321,7 +321,7 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
         startDate: '',
         endDate: ''
      };
-     onChange({ ...data, projects: [newProj, ...data.projects]});
+     onChange({ ...data, projects: [...data.projects, newProj]});
   };
 
   const removeProject = (id: string) => {
@@ -587,8 +587,17 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                   {/* EXPERIENCE */}
                   {activeSection === 'experience' && (
                     <div className="space-y-6">
-                      {data.experience.map((exp) => (
-                        <div key={exp.id} className={cardClass}>
+                      <AnimatePresence mode="popLayout">
+                        {data.experience.map((exp) => (
+                          <motion.div 
+                            key={exp.id} 
+                            layout
+                            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+                            transition={{ duration: 0.2 }}
+                            className={cardClass}
+                          >
                           <button onClick={() => removeExperience(exp.id)} className="absolute top-4 right-4 text-slate-400 dark:text-slate-500 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                               <div className="col-span-2 md:col-span-1">
@@ -628,8 +637,9 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                                   placeholder="• Achievements and responsibilities..." 
                               />
                           </div>
-                        </div>
+                        </motion.div>
                       ))}
+                      </AnimatePresence>
                       <button onClick={addExperience} className="w-full py-4 flex items-center justify-center gap-2 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:border-blue-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all font-semibold">
                           <Plus size={18} /> Add Position
                       </button>
@@ -640,8 +650,17 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                   {activeSection === 'education' && (
                     <div className="space-y-6">
                     {/* Education Items */}
+                    <AnimatePresence mode="popLayout">
                     {data.education.map((edu) => (
-                        <div key={edu.id} className={cardClass}>
+                        <motion.div 
+                          key={edu.id} 
+                          layout
+                          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+                          transition={{ duration: 0.2 }}
+                          className={cardClass}
+                        >
                             <button onClick={() => removeEducation(edu.id)} className="absolute top-4 right-4 text-slate-400 dark:text-slate-500 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
                             <div className="grid grid-cols-1 gap-4">
                                 <div>
@@ -671,8 +690,9 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                                     />
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
+                    </AnimatePresence>
                     <button onClick={addEducation} className="w-full py-4 flex items-center justify-center gap-2 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:border-blue-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all font-semibold">
                         <Plus size={18} /> Add Education
                     </button>
@@ -685,8 +705,17 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                         </div>
 
                         <div className="space-y-6">
+                            <AnimatePresence mode="popLayout">
                             {(data.volunteering || []).map((vol) => (
-                                <div key={vol.id} className={cardClass}>
+                                <motion.div 
+                                    key={vol.id} 
+                                    layout
+                                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+                                    transition={{ duration: 0.2 }}
+                                    className={cardClass}
+                                >
                                     <button onClick={() => removeVolunteering(vol.id)} className="absolute top-4 right-4 text-slate-400 dark:text-slate-500 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                         <div className="col-span-2 md:col-span-1">
@@ -724,8 +753,9 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                                             placeholder="Describe your responsibilities and impact..." 
                                         />
                                     </div>
-                                </div>
+                                </motion.div>
                             ))}
+                            </AnimatePresence>
                             <button onClick={addVolunteering} className="w-full py-4 flex items-center justify-center gap-2 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:border-blue-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all font-semibold">
                                 <Plus size={18} /> Add Volunteering Experience
                             </button>
@@ -737,8 +767,17 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                   {/* CERTIFICATIONS */}
                   {activeSection === 'certifications' && (
                     <div className="space-y-6">
+                      <AnimatePresence mode="popLayout">
                       {(data.certifications || []).map((cert, index) => (
-                          <div key={index} className="flex gap-3 items-center">
+                          <motion.div 
+                            key={index} 
+                            layout
+                            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+                            transition={{ duration: 0.2 }}
+                            className="flex gap-3 items-center"
+                          >
                               <input 
                                 type="text" 
                                 value={cert} 
@@ -749,8 +788,9 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                               <button onClick={() => removeCertification(index)} className="text-slate-400 dark:text-slate-500 hover:text-red-500 transition-colors p-2">
                                 <Trash2 size={18} />
                               </button>
-                          </div>
+                          </motion.div>
                       ))}
+                      </AnimatePresence>
                       <button onClick={addCertification} className="w-full py-4 flex items-center justify-center gap-2 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:border-blue-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all font-semibold">
                           <Plus size={18} /> Add Certification
                       </button>
@@ -786,8 +826,17 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                   {/* PROJECTS */}
                   {activeSection === 'projects' && (
                     <div className="space-y-6">
+                      <AnimatePresence mode="popLayout">
                       {data.projects.map((proj) => (
-                          <div key={proj.id} className={cardClass}>
+                          <motion.div 
+                            key={proj.id} 
+                            layout
+                            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+                            transition={{ duration: 0.2 }}
+                            className={cardClass}
+                          >
                             <button onClick={() => removeProject(proj.id)} className="absolute top-4 right-4 text-slate-400 dark:text-slate-500 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="col-span-2">
@@ -815,8 +864,9 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                                     />
                                 </div>
                             </div>
-                          </div>
+                          </motion.div>
                       ))}
+                      </AnimatePresence>
                       <button onClick={addProject} className="w-full py-4 flex items-center justify-center gap-2 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:border-blue-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all font-semibold">
                           <Plus size={18} /> Add Project
                       </button>

@@ -4,7 +4,8 @@ import { INITIAL_RESUME_STATE } from './constants';
 import { Editor } from './components/Editor';
 import { Preview } from './components/Preview';
 import { Background } from './components/Background';
-import { Moon, Sun, ChevronDown, Pencil, Check, X, User, LogIn, UserPlus } from 'lucide-react';
+import { Moon, Sun, ChevronDown, Pencil, Check, X, User, LogIn, UserPlus, Info } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const App: React.FC = () => {
   const [resumeData, setResumeData] = useState<ResumeData>(INITIAL_RESUME_STATE);
@@ -18,6 +19,7 @@ const App: React.FC = () => {
 
   // User Menu State
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showFeaturePopup, setShowFeaturePopup] = useState(false);
 
   // Toggle Dark Class on HTML element
   useEffect(() => {
@@ -51,6 +53,11 @@ const App: React.FC = () => {
 
   const handleCancelName = () => {
     setIsEditingName(false);
+  };
+
+  const handleFeatureUnavailable = () => {
+    setShowUserMenu(false);
+    setShowFeaturePopup(true);
   };
 
   return (
@@ -158,10 +165,14 @@ const App: React.FC = () => {
                         <div className="fixed inset-0 z-30" onClick={() => setShowUserMenu(false)} />
                         <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl overflow-hidden z-40 animate-in fade-in zoom-in-95 duration-200">
                              <div className="p-1">
-                                <button className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors flex items-center gap-3">
+                                <button 
+                                    onClick={handleFeatureUnavailable}
+                                    className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors flex items-center gap-3">
                                     <LogIn size={16} className="text-blue-500" /> Login
                                 </button>
-                                <button className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors flex items-center gap-3">
+                                <button 
+                                    onClick={handleFeatureUnavailable}
+                                    className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors flex items-center gap-3">
                                     <UserPlus size={16} className="text-green-500" /> Register
                                 </button>
                             </div>
@@ -185,6 +196,48 @@ const App: React.FC = () => {
             <Preview data={resumeData} />
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="no-print py-1.5 text-center text-[10px] sm:text-xs font-medium text-slate-400 dark:text-slate-600 bg-white/50 dark:bg-slate-950/50 backdrop-blur-sm border-t border-slate-200 dark:border-slate-800 shrink-0 z-20">
+          Made with <span className="text-red-500 inline-block animate-pulse">♥</span> by Johann
+      </footer>
+
+      {/* Feature Unavailable Modal */}
+      <AnimatePresence>
+        {showFeaturePopup && (
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+                onClick={() => setShowFeaturePopup(false)}
+            >
+                <motion.div 
+                    initial={{ scale: 0.95, opacity: 0, y: 10 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    exit={{ scale: 0.95, opacity: 0, y: 10 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl max-w-sm w-full overflow-hidden border border-slate-200 dark:border-slate-800 text-center p-6"
+                >
+                    <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600 dark:text-blue-400">
+                        <Info size={32} />
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Coming Soon</h3>
+                    <p className="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                        This feature is currently not available. We are working hard to bring user accounts to Rezo!
+                    </p>
+                    <button 
+                        onClick={() => setShowFeaturePopup(false)} 
+                        className="w-full py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold hover:opacity-90 transition-opacity"
+                    >
+                        Got it
+                    </button>
+                </motion.div>
+            </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
