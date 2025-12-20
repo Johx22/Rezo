@@ -108,7 +108,8 @@ const Star = memo(() => {
     const moveY = (Math.random() - 0.5) * 100; 
 
     const size = Math.random() * 2 + 1; // 1 to 3px
-    const duration = Math.random() * 20 + 10; // 10 to 30s
+    // Reduced duration for faster movement (was 10-30s, now 5-15s)
+    const duration = Math.random() * 10 + 5; 
 
     return (
         <motion.div

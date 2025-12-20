@@ -31,7 +31,7 @@ export const Background: React.FC = () => {
       <motion.div
         animate={position}
         transition={{
-            duration: 20, // Very slow, ambient movement
+            duration: 10, //Faster movement
             ease: "easeInOut",
         }}
         onAnimationComplete={handleAnimationComplete}
