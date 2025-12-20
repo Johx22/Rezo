@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
@@ -7,8 +7,28 @@ interface LandingPageProps {
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
+  // --- Header Hover Effect State ---
+  const [cursor, setCursor] = useState({ x: -100, y: -100 });
+  const [isHoveringHeader, setIsHoveringHeader] = useState(false);
+  const headerRef = useRef<HTMLHeadingElement>(null);
+
+  const handleHeaderMouseMove = (e: React.MouseEvent<HTMLHeadingElement>) => {
+      if (headerRef.current) {
+          const rect = headerRef.current.getBoundingClientRect();
+          setCursor({
+              x: e.clientX - rect.left,
+              y: e.clientY - rect.top
+          });
+          setIsHoveringHeader(true);
+      }
+  };
+
+  const handleHeaderMouseLeave = () => {
+      setIsHoveringHeader(false);
+  };
+
   return (
-    <div className="relative h-screen w-full bg-slate-950 overflow-hidden text-white flex flex-col font-sans">
+    <div className="relative h-screen w-full bg-slate-950 overflow-hidden text-white flex flex-col font-sans selection:bg-blue-500/30">
       
       {/* Starry Background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -36,7 +56,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="max-w-4xl"
         >
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-10 leading-tight tracking-tight bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent">
+            {/* Interactive H1 with flowing gradient on hover */}
+            <h1 
+                ref={headerRef}
+                onMouseMove={handleHeaderMouseMove}
+                onMouseLeave={handleHeaderMouseLeave}
+                className="text-5xl md:text-7xl lg:text-8xl font-bold mb-10 leading-tight tracking-tight bg-clip-text text-transparent cursor-default select-none transition-opacity duration-300"
+                style={{
+                    backgroundImage: isHoveringHeader 
+                        ? `radial-gradient(circle 200px at ${cursor.x}px ${cursor.y}px, #3b82f6 0%, #8b5cf6 25%, #06b6d4 50%, #ffffff 100%)`
+                        : 'linear-gradient(to bottom, #ffffff, #94a3b8)',
+                    WebkitBackgroundClip: 'text',
+                    backgroundClip: 'text'
+                }}
+            >
                 Because your<br />resume matters.
             </h1>
         </motion.div>
@@ -65,7 +98,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
   );
 };
 
-const Star = () => {
+const Star = memo(() => {
     // Generate random starting positions
     const top = Math.random() * 100;
     const left = Math.random() * 100;
@@ -100,4 +133,4 @@ const Star = () => {
             }}
         />
     );
-};
+});
