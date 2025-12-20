@@ -184,8 +184,10 @@ export const Preview: React.FC<PreviewProps> = ({ data, scale = 1 }) => {
         className="mx-auto origin-top transition-transform duration-200"
         style={{ 
             width: '210mm', 
-            transform: `scale(${scale})`,
-            marginBottom: `${(scale - 1) * totalHeightMM}mm` 
+            // IMPORTANT: Remove transform when scale is 1 (Printing). 
+            // Transformed elements act as containing blocks and break standard pagination.
+            transform: scale !== 1 ? `scale(${scale})` : 'none', 
+            marginBottom: scale !== 1 ? `${(scale - 1) * totalHeightMM}mm` : 0 
         }}
     >
         {layout.map((pageSections, pageIndex) => (

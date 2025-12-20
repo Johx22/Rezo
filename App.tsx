@@ -61,10 +61,12 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden relative font-sans text-slate-900 dark:text-slate-200 transition-colors duration-300">
+    <div className="h-screen flex flex-col overflow-hidden relative font-sans text-slate-900 dark:text-slate-200 transition-colors duration-300 print:h-auto print:overflow-visible">
       
       {/* Live Animated Background */}
-      <Background />
+      <div className="no-print">
+         <Background />
+      </div>
 
       {/* Navbar - No Print */}
       <header className="no-print h-16 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-white/20 dark:border-slate-800 flex items-center justify-between px-4 lg:px-6 shrink-0 z-20 shadow-sm dark:shadow-lg transition-colors duration-300">
@@ -183,7 +185,7 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      <main className="flex-1 flex overflow-hidden relative z-10">
+      <main className="flex-1 flex overflow-hidden relative z-10 print:h-auto print:overflow-visible print:block">
         {/* Editor - Takes full screen, handles its own layout including the small preview */}
         <div className="w-full h-full bg-transparent no-print">
              <Editor data={resumeData} onChange={setResumeData} resumeName={resumeName} />
