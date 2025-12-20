@@ -4,7 +4,7 @@ import { INITIAL_RESUME_STATE } from './constants';
 import { Editor } from './components/Editor';
 import { Preview } from './components/Preview';
 import { Background } from './components/Background';
-import { LayoutTemplate, Moon, Sun, ChevronDown, Pencil, Check, X, User, LogIn, UserPlus } from 'lucide-react';
+import { Moon, Sun, ChevronDown, Pencil, Check, X, User, LogIn, UserPlus } from 'lucide-react';
 
 const App: React.FC = () => {
   const [resumeData, setResumeData] = useState<ResumeData>(INITIAL_RESUME_STATE);
@@ -63,11 +63,15 @@ const App: React.FC = () => {
       <header className="no-print h-16 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-white/20 dark:border-slate-800 flex items-center justify-between px-4 lg:px-6 shrink-0 z-20 shadow-sm dark:shadow-lg transition-colors duration-300">
         
         {/* Left: Logo */}
-        <div className="flex items-center gap-2 w-[200px] lg:w-[280px]">
-            <div className="p-1.5 bg-blue-600 rounded-md shadow-sm">
-                <LayoutTemplate size={20} className="text-white" />
+        <div className="flex items-center gap-1 w-[200px] lg:w-[280px]">
+            <div className="flex items-center justify-center">
+                {/* Custom 'Rezo' Logo: Blue R with Dot */}
+                <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+                    <text x="2" y="28" fontFamily="Inter, sans-serif" fontWeight="800" fontSize="30" className="fill-blue-600 dark:fill-blue-500">R</text>
+                    <circle cx="27" cy="24" r="3.5" className="fill-slate-900 dark:fill-slate-100" />
+                </svg>
             </div>
-            <span className="font-bold text-lg tracking-tight text-slate-800 dark:text-white hidden sm:inline">ResuGenius<span className="text-blue-600 dark:text-blue-500">AI</span></span>
+            <span className="font-bold text-xl tracking-tight text-slate-800 dark:text-white hidden sm:inline relative top-[1px]">Rezo</span>
         </div>
         
         {/* Center: Resume Name Input */}

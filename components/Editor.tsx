@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ResumeData, ExperienceItem, EducationItem, ProjectItem, VolunteeringItem } from '../types';
-import { Plus, Trash2, Wand2, ChevronRight, ChevronLeft, ArrowRight, User, Briefcase, GraduationCap, Lightbulb, Rocket, Upload, Eye, Award, Share2, Download, Printer, Mail, HeartHandshake, ZoomIn, ZoomOut, RotateCcw, HelpCircle, X, Hand } from 'lucide-react';
+import { Plus, Trash2, Wand2, ChevronRight, ChevronLeft, ArrowRight, User, Briefcase, GraduationCap, Lightbulb, Rocket, Upload, Eye, Award, Share2, Download, Printer, HeartHandshake, ZoomIn, ZoomOut, RotateCcw, HelpCircle, X, Hand } from 'lucide-react';
 import { enhanceDescription, generateResumeSummary, suggestSkills } from '../services/geminiService';
 import { Preview } from './Preview';
 import { RichTextEditor } from './RichTextEditor';
@@ -346,12 +346,6 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
     setTimeout(() => {
         document.title = originalTitle; // Revert title
     }, 500);
-  };
-
-  const handleEmail = () => {
-    const subject = encodeURIComponent(`Resume - ${data.personalInfo.fullName}`);
-    const body = encodeURIComponent(`Please find attached the resume for ${data.personalInfo.fullName}.`);
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
   };
 
   const handleGenerateSummary = async () => {
@@ -848,11 +842,6 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                               {/* Print */}
                               <button onClick={triggerPrint} className="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
                                   <Printer size={18} /> Print
-                              </button>
-
-                              {/* Email */}
-                              <button onClick={handleEmail} className="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
-                                  <Mail size={18} /> Email
                               </button>
                           </div>
                       </div>
