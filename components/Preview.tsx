@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { ResumeData } from '../types';
 import { Mail, Phone, MapPin, Globe, Linkedin, Link as LinkIcon, Github } from 'lucide-react';
 
@@ -9,10 +9,26 @@ interface PreviewProps {
 
 export const Preview: React.FC<PreviewProps> = ({ data, scale = 1 }) => {
   const hasProfilePicture = data.personalInfo.showProfilePicture && data.personalInfo.profilePicture;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [pages, setPages] = useState<number[]>([1]);
+
+  // Dynamically calculate how many pages the content spans
+  useEffect(() => {
+    if (containerRef.current) {
+        const height = containerRef.current.scrollHeight;
+        // A4 height at 96 DPI is approx 1123px (297mm)
+        // We use a slightly safer visual calculation
+        const pageHeightPx = 1122; 
+        const pageCount = Math.ceil(height / pageHeightPx);
+        // Create an array [1, 2, 3...]
+        setPages(Array.from({ length: Math.max(pageCount, 1) }, (_, i) => i + 1));
+    }
+  }, [data, scale]); // Recalculate when data changes
 
   return (
     <div 
-        className="bg-white shadow-2xl print:shadow-none mx-auto origin-top transition-transform duration-200 print:!w-full print:!h-auto print:!m-0 print:!transform-none"
+        ref={containerRef}
+        className="bg-white shadow-2xl print:shadow-none mx-auto origin-top transition-transform duration-200 print:!w-full print:!h-auto print:!m-0 print:!transform-none relative"
         style={{ 
             width: '210mm', 
             minHeight: '297mm',
@@ -20,6 +36,21 @@ export const Preview: React.FC<PreviewProps> = ({ data, scale = 1 }) => {
             marginBottom: `${(scale - 1) * 297}mm` 
         }}
     >
+        {/* Visual Page Break Indicators (Print Hidden) */}
+        <div className="absolute inset-0 pointer-events-none z-50 print:hidden overflow-hidden">
+             {pages.map((page) => (
+                 page > 0 && (
+                     <div 
+                        key={page} 
+                        className="w-full border-b-2 border-dashed border-red-300/50 flex justify-end items-end pr-2 box-border"
+                        style={{ position: 'absolute', top: `${page * 297}mm`, height: '2px' }}
+                     >
+                        <span className="text-[10px] font-bold text-red-300/70 uppercase tracking-widest mb-1 mr-1">Page {page + 1} Start</span>
+                     </div>
+                 )
+             ))}
+        </div>
+
         {/* Header */}
         <div className="px-8 py-10 bg-slate-900 text-white print:bg-slate-900 print:text-white print-color-adjust-exact">
             <div className={`flex ${hasProfilePicture ? 'gap-8 items-center' : ''}`}>

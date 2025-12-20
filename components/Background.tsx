@@ -31,12 +31,12 @@ export const Background: React.FC = () => {
       <motion.div
         animate={position}
         transition={{
-            duration: 20, // Very slow, ambient movement
+            duration: 12, // Increased speed (was 20)
             ease: "easeInOut",
         }}
         onAnimationComplete={handleAnimationComplete}
         className="absolute top-0 left-0 w-[800px] h-[800px] rounded-full blur-[100px]
-                   opacity-40 dark:opacity-30
+                   opacity-25 dark:opacity-30
                    bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-500 
                    dark:from-blue-600 dark:via-indigo-600 dark:to-violet-600
                    mix-blend-multiply dark:mix-blend-screen
