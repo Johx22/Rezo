@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
@@ -7,9 +7,59 @@ interface LandingPageProps {
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
+  // State for animated gradient blobs
+  const [blob1Pos, setBlob1Pos] = useState({ x: 0, y: 0 });
+  const [blob2Pos, setBlob2Pos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+     // Initial positions
+     setBlob1Pos({ x: Math.random() * (window.innerWidth / 2), y: Math.random() * (window.innerHeight / 2) });
+     setBlob2Pos({ x: Math.random() * (window.innerWidth / 2) + window.innerWidth/2 - 400, y: Math.random() * (window.innerHeight / 2) + window.innerHeight/2 - 400 });
+  }, []);
+
+  const moveBlob1 = () => {
+      setBlob1Pos({ 
+          x: Math.random() * (window.innerWidth - 500), 
+          y: Math.random() * (window.innerHeight - 500) 
+      });
+  };
+
+  const moveBlob2 = () => {
+      setBlob2Pos({ 
+          x: Math.random() * (window.innerWidth - 500), 
+          y: Math.random() * (window.innerHeight - 500) 
+      });
+  };
+
   return (
-    <div className="relative h-screen w-full bg-slate-950 overflow-hidden text-white flex flex-col font-sans">
+    <div className="relative h-screen w-full bg-slate-950 overflow-hidden text-white flex flex-col font-sans selection:bg-blue-500/30">
       
+      {/* Gradient Background Layer */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+          {/* Blob 1 - Blue/Indigo */}
+          <motion.div
+            animate={blob1Pos}
+            transition={{ duration: 20, ease: "easeInOut" }}
+            onAnimationComplete={moveBlob1}
+            className="absolute w-[800px] h-[800px] rounded-full blur-[100px] opacity-30
+                       bg-gradient-to-r from-blue-600 via-indigo-500 to-violet-500
+                       mix-blend-screen"
+          />
+          
+          {/* Blob 2 - Cyan/Teal (offset) */}
+          <motion.div
+            animate={blob2Pos}
+            transition={{ duration: 25, ease: "easeInOut" }}
+            onAnimationComplete={moveBlob2}
+            className="absolute w-[600px] h-[600px] rounded-full blur-[80px] opacity-20
+                       bg-gradient-to-l from-cyan-500 via-teal-500 to-emerald-500
+                       mix-blend-screen"
+          />
+          
+          {/* Noise overlay for texture */}
+          <div className="absolute inset-0 opacity-20 brightness-100 contrast-150 mix-blend-overlay" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E")` }}></div>
+      </div>
+
       {/* Starry Background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {[...Array(40)].map((_, i) => (
@@ -36,7 +86,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="max-w-4xl"
         >
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-10 leading-tight tracking-tight bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-10 leading-tight tracking-tight bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent drop-shadow-sm">
                 Because your<br />resume matters.
             </h1>
         </motion.div>
