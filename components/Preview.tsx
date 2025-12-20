@@ -15,6 +15,9 @@ export const Preview: React.FC<PreviewProps> = ({ data, scale = 1 }) => {
     ? data.sectionLayout 
     : [['summary', 'experience', 'education', 'volunteering', 'certifications', 'projects', 'skills', 'languages']];
 
+  // Calculate approximate total height for margin adjustment when scaled
+  const totalHeightMM = layout.length * 297 + (layout.length - 1) * 8; // 8mm gap approx
+
   const renderSection = (sectionId: string) => {
       switch (sectionId) {
           case 'summary':
@@ -182,7 +185,7 @@ export const Preview: React.FC<PreviewProps> = ({ data, scale = 1 }) => {
         style={{ 
             width: '210mm', 
             transform: `scale(${scale})`,
-            marginBottom: `${(scale - 1) * 297}mm` 
+            marginBottom: `${(scale - 1) * totalHeightMM}mm` 
         }}
     >
         {layout.map((pageSections, pageIndex) => (
@@ -191,7 +194,7 @@ export const Preview: React.FC<PreviewProps> = ({ data, scale = 1 }) => {
                 className="bg-white shadow-2xl print:shadow-none mb-8 print:mb-0 relative overflow-hidden flex flex-col print-page"
                 style={{ 
                     width: '210mm', 
-                    minHeight: '297mm',
+                    height: '297mm', // Strict A4 Height
                     pageBreakAfter: pageIndex < layout.length - 1 ? 'always' : 'auto',
                 }}
             >
@@ -274,9 +277,10 @@ export const Preview: React.FC<PreviewProps> = ({ data, scale = 1 }) => {
         <style>{`
             @media print {
                 .print-page {
-                    break-after: always;
+                    break-after: page;
                     page-break-after: always;
-                    min-height: 100vh;
+                    height: 297mm !important;
+                    overflow: hidden !important;
                     margin-bottom: 0 !important;
                     box-shadow: none !important;
                 }
