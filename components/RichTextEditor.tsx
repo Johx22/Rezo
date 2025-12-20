@@ -63,6 +63,16 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange,
 
   return (
     <div className={`border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-white dark:bg-slate-900 focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600 focus-within:border-blue-500 dark:focus-within:border-blue-600 transition-all ${className}`}>
+      <style>{`
+        [contenteditable]:empty:before {
+            content: attr(data-placeholder);
+            color: #94a3b8;
+            pointer-events: none;
+        }
+        .dark [contenteditable]:empty:before {
+            color: #475569;
+        }
+      `}</style>
       <div className="flex items-center gap-1 p-2 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 transition-colors">
         <ToolbarButton icon={Bold} command="bold" title="Bold" />
         <ToolbarButton icon={Italic} command="italic" title="Italic" />
@@ -75,7 +85,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange,
         ref={editorRef}
         contentEditable
         onInput={handleInput}
-        className="p-3 min-h-[150px] outline-none text-sm text-slate-900 dark:text-slate-200 leading-relaxed max-h-[400px] overflow-y-auto [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_li]:mb-1 placeholder:text-slate-400 dark:placeholder:text-slate-600"
+        className="p-3 min-h-[150px] outline-none text-sm text-slate-900 dark:text-slate-200 leading-relaxed max-h-[400px] overflow-y-auto [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_li]:mb-1"
         data-placeholder={placeholder}
       />
     </div>

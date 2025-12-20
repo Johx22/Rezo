@@ -437,7 +437,7 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
   // Unified Print Handler for both "Download PDF" and "Print" buttons
   const triggerPrint = () => {
     const originalTitle = document.title;
-    document.title = resumeName; // Set title so the PDF filename is correct
+    document.title = resumeName || "Untitled Resume"; // Set title so the PDF filename is correct
     window.print();
     setTimeout(() => {
         document.title = originalTitle; // Revert title
@@ -673,35 +673,35 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
 
                       <div className="col-span-2">
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-400 mb-1.5">Full Name</label>
-                        <input type="text" value={data.personalInfo.fullName} onChange={(e) => updatePersonal('fullName', e.target.value)} className={inputClass} />
+                        <input type="text" placeholder="e.g. Alex Morgan" value={data.personalInfo.fullName} onChange={(e) => updatePersonal('fullName', e.target.value)} className={inputClass} />
                       </div>
                       <div className="col-span-2">
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-400 mb-1.5">Professional Title</label>
-                        <input type="text" value={data.personalInfo.title} onChange={(e) => updatePersonal('title', e.target.value)} className={inputClass} />
+                        <input type="text" placeholder="e.g. Senior Product Designer" value={data.personalInfo.title} onChange={(e) => updatePersonal('title', e.target.value)} className={inputClass} />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-400 mb-1.5">Email</label>
-                        <input type="email" value={data.personalInfo.email} onChange={(e) => updatePersonal('email', e.target.value)} className={inputClass} />
+                        <input type="email" placeholder="e.g. alex@example.com" value={data.personalInfo.email} onChange={(e) => updatePersonal('email', e.target.value)} className={inputClass} />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-400 mb-1.5">Phone</label>
-                        <input type="text" value={data.personalInfo.phone} onChange={(e) => updatePersonal('phone', e.target.value)} className={inputClass} />
+                        <input type="text" placeholder="e.g. (555) 123-4567" value={data.personalInfo.phone} onChange={(e) => updatePersonal('phone', e.target.value)} className={inputClass} />
                       </div>
                       <div className="col-span-2">
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-400 mb-1.5">Location</label>
-                        <input type="text" value={data.personalInfo.location} onChange={(e) => updatePersonal('location', e.target.value)} className={inputClass} />
+                        <input type="text" placeholder="e.g. San Francisco, CA" value={data.personalInfo.location} onChange={(e) => updatePersonal('location', e.target.value)} className={inputClass} />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-400 mb-1.5">LinkedIn</label>
-                        <input type="text" value={data.personalInfo.linkedin} onChange={(e) => updatePersonal('linkedin', e.target.value)} className={inputClass} />
+                        <input type="text" placeholder="e.g. linkedin.com/in/alexmorgan" value={data.personalInfo.linkedin} onChange={(e) => updatePersonal('linkedin', e.target.value)} className={inputClass} />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-400 mb-1.5">GitHub</label>
-                        <input type="text" value={data.personalInfo.github || ''} onChange={(e) => updatePersonal('github', e.target.value)} className={inputClass} />
+                        <input type="text" placeholder="e.g. github.com/alexmorgan" value={data.personalInfo.github || ''} onChange={(e) => updatePersonal('github', e.target.value)} className={inputClass} />
                       </div>
                       <div className="col-span-2">
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-400 mb-1.5">Website</label>
-                        <input type="text" value={data.personalInfo.website} onChange={(e) => updatePersonal('website', e.target.value)} className={inputClass} />
+                        <input type="text" placeholder="e.g. alexmorgan.design" value={data.personalInfo.website} onChange={(e) => updatePersonal('website', e.target.value)} className={inputClass} />
                       </div>
                     </div>
                   )}
@@ -724,11 +724,11 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                               <div className="col-span-2 md:col-span-1">
                                   <label className="block text-xs font-semibold text-slate-500 dark:text-slate-500 uppercase mb-1">Position</label>
-                                  <input type="text" value={exp.position} onChange={(e) => updateExperience(exp.id, 'position', e.target.value)} className={inputClass} />
+                                  <input type="text" placeholder="e.g. Senior UX Designer" value={exp.position} onChange={(e) => updateExperience(exp.id, 'position', e.target.value)} className={inputClass} />
                               </div>
                               <div className="col-span-2 md:col-span-1">
                                   <label className="block text-xs font-semibold text-slate-500 dark:text-slate-500 uppercase mb-1">Company</label>
-                                  <input type="text" value={exp.company} onChange={(e) => updateExperience(exp.id, 'company', e.target.value)} className={inputClass} />
+                                  <input type="text" placeholder="e.g. TechFlow Solutions" value={exp.company} onChange={(e) => updateExperience(exp.id, 'company', e.target.value)} className={inputClass} />
                               </div>
                               <div>
                                   <label className="block text-xs font-semibold text-slate-500 dark:text-slate-500 uppercase mb-1">Start Date</label>
@@ -756,7 +756,7 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                               <RichTextEditor 
                                   value={exp.description} 
                                   onChange={(val) => updateExperience(exp.id, 'description', val)} 
-                                  placeholder="• Achievements and responsibilities..." 
+                                  placeholder="• Led the redesign of the core SaaS platform..." 
                               />
                           </div>
                         </motion.div>
@@ -787,16 +787,16 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                             <div className="grid grid-cols-1 gap-4">
                                 <div>
                                     <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">School / University</label>
-                                    <input type="text" value={edu.school} onChange={(e) => updateEducation(edu.id, 'school', e.target.value)} className={inputClass} />
+                                    <input type="text" placeholder="e.g. University of California" value={edu.school} onChange={(e) => updateEducation(edu.id, 'school', e.target.value)} className={inputClass} />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Degree</label>
-                                        <input type="text" value={edu.degree} onChange={(e) => updateEducation(edu.id, 'degree', e.target.value)} className={inputClass} />
+                                        <input type="text" placeholder="e.g. Bachelor of Science" value={edu.degree} onChange={(e) => updateEducation(edu.id, 'degree', e.target.value)} className={inputClass} />
                                     </div>
                                     <div>
                                         <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Field of Study</label>
-                                        <input type="text" value={edu.field} onChange={(e) => updateEducation(edu.id, 'field', e.target.value)} className={inputClass} />
+                                        <input type="text" placeholder="e.g. Computer Science" value={edu.field} onChange={(e) => updateEducation(edu.id, 'field', e.target.value)} className={inputClass} />
                                     </div>
                                 </div>
                                 <div>
@@ -808,7 +808,7 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                                     <RichTextEditor 
                                         value={edu.description || ''} 
                                         onChange={(val) => updateEducation(edu.id, 'description', val)} 
-                                        placeholder="GPA, Awards, Relevant Coursework..." 
+                                        placeholder="• Graduated with Honors (Cum Laude)..." 
                                     />
                                 </div>
                             </div>
@@ -842,15 +842,15 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                         <div className="col-span-2 md:col-span-1">
                                             <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Organization Name</label>
-                                            <input type="text" value={vol.organization} onChange={(e) => updateVolunteering(vol.id, 'organization', e.target.value)} className={inputClass} />
+                                            <input type="text" placeholder="e.g. Design for Good" value={vol.organization} onChange={(e) => updateVolunteering(vol.id, 'organization', e.target.value)} className={inputClass} />
                                         </div>
                                         <div className="col-span-2 md:col-span-1">
                                             <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Title / Role</label>
-                                            <input type="text" value={vol.role} onChange={(e) => updateVolunteering(vol.id, 'role', e.target.value)} className={inputClass} />
+                                            <input type="text" placeholder="e.g. Volunteer Mentor" value={vol.role} onChange={(e) => updateVolunteering(vol.id, 'role', e.target.value)} className={inputClass} />
                                         </div>
                                         <div className="col-span-2">
                                             <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Location</label>
-                                            <input type="text" value={vol.location} onChange={(e) => updateVolunteering(vol.id, 'location', e.target.value)} className={inputClass} />
+                                            <input type="text" placeholder="e.g. San Francisco, CA" value={vol.location} onChange={(e) => updateVolunteering(vol.id, 'location', e.target.value)} className={inputClass} />
                                         </div>
                                         <div>
                                             <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Start Date</label>
@@ -872,7 +872,7 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                                         <RichTextEditor 
                                             value={vol.description} 
                                             onChange={(val) => updateVolunteering(vol.id, 'description', val)} 
-                                            placeholder="Describe your responsibilities and impact..." 
+                                            placeholder="• Mentoring aspiring designers..." 
                                         />
                                     </div>
                                 </motion.div>
@@ -904,15 +904,15 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                   <div className="col-span-2 md:col-span-1">
                                       <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Designation</label>
-                                      <input type="text" value={int.designation} onChange={(e) => updateInternship(int.id, 'designation', e.target.value)} className={inputClass} />
+                                      <input type="text" placeholder="e.g. Frontend Intern" value={int.designation} onChange={(e) => updateInternship(int.id, 'designation', e.target.value)} className={inputClass} />
                                   </div>
                                   <div className="col-span-2 md:col-span-1">
                                       <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Organization</label>
-                                      <input type="text" value={int.organization} onChange={(e) => updateInternship(int.id, 'organization', e.target.value)} className={inputClass} />
+                                      <input type="text" placeholder="e.g. Tech Corp" value={int.organization} onChange={(e) => updateInternship(int.id, 'organization', e.target.value)} className={inputClass} />
                                   </div>
                                   <div className="col-span-2">
                                       <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Location</label>
-                                      <input type="text" value={int.location} onChange={(e) => updateInternship(int.id, 'location', e.target.value)} className={inputClass} />
+                                      <input type="text" placeholder="e.g. New York, NY" value={int.location} onChange={(e) => updateInternship(int.id, 'location', e.target.value)} className={inputClass} />
                                   </div>
                                   <div>
                                       <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Start Date</label>
@@ -938,7 +938,7 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                                   <RichTextEditor 
                                       value={int.description} 
                                       onChange={(val) => updateInternship(int.id, 'description', val)} 
-                                      placeholder="Describe your internship responsibilities..." 
+                                      placeholder="• Assisted in developing the main dashboard..." 
                                   />
                               </div>
                           </motion.div>
@@ -995,7 +995,7 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                             </button>
                         </div>
                         <p className="text-xs text-slate-500 mb-3">Separate skills with commas (e.g. React, Python, Leadership)</p>
-                        <textarea value={data.skills.join(', ')} onChange={handleSkillsChange} rows={8} className={textAreaClass} placeholder="Start typing your skills..." />
+                        <textarea value={data.skills.join(', ')} onChange={handleSkillsChange} rows={8} className={textAreaClass} placeholder="e.g. Figma, Sketch, HTML/CSS, Agile" />
                       </div>
 
                       {/* Languages Section */}
@@ -1027,11 +1027,11 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="col-span-2">
                                     <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Project Name</label>
-                                    <input type="text" value={proj.name} onChange={(e) => updateProject(proj.id, 'name', e.target.value)} className={inputClass} />
+                                    <input type="text" placeholder="e.g. EcoTrack Mobile App" value={proj.name} onChange={(e) => updateProject(proj.id, 'name', e.target.value)} className={inputClass} />
                                 </div>
                                 <div className="col-span-2">
                                     <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Link (Optional)</label>
-                                    <input type="text" value={proj.link} onChange={(e) => updateProject(proj.id, 'link', e.target.value)} className={inputClass} />
+                                    <input type="text" placeholder="e.g. github.com/alexmorgan/ecotrack" value={proj.link} onChange={(e) => updateProject(proj.id, 'link', e.target.value)} className={inputClass} />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Start Date (Optional)</label>
@@ -1046,7 +1046,7 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                                     <RichTextEditor 
                                         value={proj.description} 
                                         onChange={(val) => updateProject(proj.id, 'description', val)} 
-                                        placeholder="Describe the project..."
+                                        placeholder="• Designed and developed a personal carbon footprint tracking application..."
                                     />
                                 </div>
                             </div>

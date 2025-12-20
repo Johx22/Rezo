@@ -5,13 +5,12 @@ import { Editor } from './components/Editor';
 import { Preview } from './components/Preview';
 import { Background } from './components/Background';
 import { LandingPage } from './components/LandingPage';
-import { Moon, Sun, ChevronDown, Pencil, Check, X, User, LogIn, UserPlus, Info, FileJson } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { Moon, Sun, Pencil, Check, X, FileJson } from 'lucide-react';
 
 // --- Main Editor Component (The actual App) ---
 const ResumeEditor: React.FC = () => {
   const [resumeData, setResumeData] = useState<ResumeData>(INITIAL_RESUME_STATE);
-  const [resumeName, setResumeName] = useState("Untitled Resume");
+  const [resumeName, setResumeName] = useState(""); // Empty by default for watermark
   const [isDarkMode, setIsDarkMode] = useState(true);
   
   // Name Editing State
@@ -19,10 +18,6 @@ const ResumeEditor: React.FC = () => {
   const [tempName, setTempName] = useState("");
   const nameInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // User Menu State
-  const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showFeaturePopup, setShowFeaturePopup] = useState(false);
 
   // Toggle Dark Class on HTML element
   useEffect(() => {
@@ -48,19 +43,12 @@ const ResumeEditor: React.FC = () => {
   };
 
   const handleSaveName = () => {
-    if (tempName.trim()) {
-      setResumeName(tempName.trim());
-    }
+    setResumeName(tempName);
     setIsEditingName(false);
   };
 
   const handleCancelName = () => {
     setIsEditingName(false);
-  };
-
-  const handleFeatureUnavailable = () => {
-    setShowUserMenu(false);
-    setShowFeaturePopup(true);
   };
 
   // JSON Import Handlers
@@ -142,8 +130,8 @@ const ResumeEditor: React.FC = () => {
                             if (e.key === 'Enter') handleSaveName();
                             if (e.key === 'Escape') handleCancelName();
                         }}
-                        className="text-center text-sm sm:text-base font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 outline-none border-2 border-blue-500 rounded-lg px-3 py-1.5 w-full max-w-[240px] shadow-sm"
-                        placeholder="Enter resume name..."
+                        className="text-center text-sm sm:text-base font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 outline-none border-2 border-blue-500 rounded-lg px-3 py-1.5 w-full max-w-[240px] shadow-sm placeholder:text-slate-400"
+                        placeholder="Resume Name..."
                     />
                     <button 
                         onClick={handleSaveName}
@@ -162,8 +150,8 @@ const ResumeEditor: React.FC = () => {
                 </div>
             ) : (
                 <div className="flex items-center gap-3 group cursor-pointer p-2 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-900/50 transition-colors" onClick={handleEditClick}>
-                    <span className="text-sm sm:text-base font-semibold text-slate-700 dark:text-slate-200 truncate max-w-[200px] sm:max-w-xs">
-                        {resumeName}
+                    <span className={`text-sm sm:text-base font-semibold truncate max-w-[200px] sm:max-w-xs ${!resumeName ? 'text-slate-400 italic' : 'text-slate-700 dark:text-slate-200'}`}>
+                        {resumeName || "Untitled Resume"}
                     </span>
                     <button 
                         className="text-slate-400 hover:text-blue-600 dark:text-slate-500 dark:hover:text-blue-400 transition-colors"
@@ -175,7 +163,7 @@ const ResumeEditor: React.FC = () => {
             )}
         </div>
         
-        {/* Right: Actions & User Info */}
+        {/* Right: Actions */}
         <div className="flex items-center justify-end gap-2 sm:gap-4 w-[200px] lg:w-[280px]">
             
             {/* Import JSON Button */}
@@ -197,47 +185,6 @@ const ResumeEditor: React.FC = () => {
                 {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
                 <span className="hidden lg:inline">{isDarkMode ? 'Light' : 'Dark'}</span>
             </button>
-
-            <div className="h-6 w-px bg-slate-300/50 dark:bg-slate-800 hidden sm:block"></div>
-
-            {/* User Menu */}
-            <div className="relative">
-                <button 
-                    onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center gap-3 cursor-pointer p-1 pr-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors outline-none"
-                >
-                     <div className="text-right hidden lg:block">
-                        <p className="text-sm font-medium text-slate-700 dark:text-slate-200 leading-none">Guest</p>
-                    </div>
-                    <div className="relative">
-                        <div className="w-9 h-9 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-500 dark:text-slate-400 border-2 border-white dark:border-slate-900 shadow-sm">
-                            <User size={18} />
-                        </div>
-                    </div>
-                    <ChevronDown size={14} className={`text-slate-400 dark:text-slate-500 hidden sm:block transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''}`} />
-                </button>
-
-                {/* Dropdown */}
-                {showUserMenu && (
-                    <>
-                        <div className="fixed inset-0 z-30" onClick={() => setShowUserMenu(false)} />
-                        <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl overflow-hidden z-40 animate-in fade-in zoom-in-95 duration-200">
-                             <div className="p-1">
-                                <button 
-                                    onClick={handleFeatureUnavailable}
-                                    className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors flex items-center gap-3">
-                                    <LogIn size={16} className="text-blue-500" /> Login
-                                </button>
-                                <button 
-                                    onClick={handleFeatureUnavailable}
-                                    className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors flex items-center gap-3">
-                                    <UserPlus size={16} className="text-green-500" /> Register
-                                </button>
-                            </div>
-                        </div>
-                    </>
-                )}
-            </div>
         </div>
       </header>
 
@@ -259,43 +206,6 @@ const ResumeEditor: React.FC = () => {
       <footer className="no-print py-1.5 text-center text-[10px] sm:text-xs font-medium text-slate-400 dark:text-slate-600 bg-white/50 dark:bg-slate-950/50 backdrop-blur-sm border-t border-slate-200 dark:border-slate-800 shrink-0 z-20">
           Made with <span className="text-red-500 inline-block animate-pulse">♥</span> by Johann
       </footer>
-
-      {/* Feature Unavailable Modal */}
-      <AnimatePresence>
-        {showFeaturePopup && (
-            <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-                onClick={() => setShowFeaturePopup(false)}
-            >
-                <motion.div 
-                    initial={{ scale: 0.95, opacity: 0, y: 10 }}
-                    animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0.95, opacity: 0, y: 10 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    onClick={(e) => e.stopPropagation()}
-                    className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl max-w-sm w-full overflow-hidden border border-slate-200 dark:border-slate-800 text-center p-6"
-                >
-                    <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600 dark:text-blue-400">
-                        <Info size={32} />
-                    </div>
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Coming Soon</h3>
-                    <p className="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
-                        This feature is currently not available. We are working hard to bring user accounts to Rezo!
-                    </p>
-                    <button 
-                        onClick={() => setShowFeaturePopup(false)} 
-                        className="w-full py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold hover:opacity-90 transition-opacity"
-                    >
-                        Got it
-                    </button>
-                </motion.div>
-            </motion.div>
-        )}
-      </AnimatePresence>
 
     </div>
   );
