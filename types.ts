@@ -17,6 +17,17 @@ export interface EducationItem {
   description?: string;
 }
 
+export interface InternshipItem {
+  id: string;
+  designation: string;
+  organization: string;
+  startDate: string;
+  endDate: string;
+  location: string;
+  keySkills: string;
+  description: string;
+}
+
 export interface VolunteeringItem {
   id: string;
   organization: string;
@@ -56,6 +67,7 @@ export interface ResumeData {
   summary: string;
   experience: ExperienceItem[];
   education: EducationItem[];
+  internship: InternshipItem[];
   volunteering: VolunteeringItem[];
   certifications: string[];
   skills: string[]; // Stored as comma separated string in UI, parsed array in type if needed, but simple array of strings is best
@@ -69,6 +81,7 @@ export enum SectionType {
   SUMMARY = 'SUMMARY',
   EXPERIENCE = 'EXPERIENCE',
   EDUCATION = 'EDUCATION',
+  INTERNSHIP = 'INTERNSHIP',
   CERTIFICATIONS = 'CERTIFICATIONS',
   SKILLS = 'SKILLS',
   PROJECTS = 'PROJECTS'

@@ -13,7 +13,7 @@ export const Preview: React.FC<PreviewProps> = ({ data, scale = 1 }) => {
   // Default to a single page with all sections if layout is missing (backward compatibility)
   const layout = data.sectionLayout && data.sectionLayout.length > 0 
     ? data.sectionLayout 
-    : [['summary', 'experience', 'education', 'volunteering', 'certifications', 'projects', 'skills', 'languages']];
+    : [['summary', 'experience', 'education', 'internship', 'volunteering', 'certifications', 'projects', 'skills', 'languages']];
 
   // Calculate approximate total height for margin adjustment when scaled
   const totalHeightMM = layout.length * 297 + (layout.length - 1) * 8; // 8mm gap approx
@@ -74,6 +74,37 @@ export const Preview: React.FC<PreviewProps> = ({ data, scale = 1 }) => {
                         ))}
                     </div>
                 </section>
+              );
+          case 'internship':
+              return data.internship && data.internship.length > 0 && (
+                  <section key="internship" className="break-inside-avoid mb-6">
+                      <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b-2 border-slate-200 pb-1 mb-4">Internships</h2>
+                      <div className="space-y-4">
+                          {data.internship.map((int) => (
+                              <div key={int.id} className="break-inside-avoid">
+                                  <div className="flex justify-between items-baseline mb-1">
+                                      <h3 className="font-bold text-slate-800">{int.designation}</h3>
+                                      <span className="text-xs font-medium text-slate-500 whitespace-nowrap">
+                                          {int.startDate} – {int.endDate}
+                                      </span>
+                                  </div>
+                                  <div className="flex justify-between items-center mb-1">
+                                    <div className="text-sm font-semibold text-blue-700">{int.organization}</div>
+                                    <div className="text-xs text-slate-500">{int.location}</div>
+                                  </div>
+                                  {int.keySkills && (
+                                      <div className="text-xs text-slate-500 mb-2 italic">
+                                          Skills: {int.keySkills}
+                                      </div>
+                                  )}
+                                  <div 
+                                      className="text-sm text-slate-600 leading-relaxed pl-1 [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_li]:mb-1"
+                                      dangerouslySetInnerHTML={{ __html: int.description }}
+                                  />
+                              </div>
+                          ))}
+                      </div>
+                  </section>
               );
           case 'volunteering':
               return data.volunteering && data.volunteering.length > 0 && (

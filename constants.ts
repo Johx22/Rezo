@@ -44,6 +44,7 @@ export const INITIAL_RESUME_STATE: ResumeData = {
       description: '<ul><li>Graduated with Honors (Cum Laude).</li><li>Focus on Human-Computer Interaction and Visual Design.</li><li>President of the Design Students Association.</li></ul>'
     }
   ],
+  internship: [],
   volunteering: [
     {
         id: '1',
@@ -78,6 +79,6 @@ export const INITIAL_RESUME_STATE: ResumeData = {
     }
   ],
   sectionLayout: [
-    ['summary', 'experience', 'education', 'projects', 'volunteering', 'certifications', 'skills', 'languages']
+    ['summary', 'experience', 'education', 'internship', 'projects', 'volunteering', 'certifications', 'skills', 'languages']
   ]
 };

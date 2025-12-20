@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ResumeData, ExperienceItem, EducationItem, ProjectItem, VolunteeringItem } from '../types';
-import { Plus, Trash2, Wand2, ChevronRight, ChevronLeft, ArrowRight, User, Briefcase, GraduationCap, Lightbulb, Rocket, Upload, Eye, Award, Share2, Download, Printer, ZoomIn, ZoomOut, RotateCcw, HelpCircle, X, Hand, LayoutTemplate, ArrowUp, ArrowDown, FilePlus, FileMinus, Move } from 'lucide-react';
+import { ResumeData, ExperienceItem, EducationItem, ProjectItem, VolunteeringItem, InternshipItem } from '../types';
+import { Plus, Trash2, Wand2, ChevronRight, ChevronLeft, ArrowRight, User, Briefcase, GraduationCap, Lightbulb, Rocket, Upload, Eye, Award, Share2, Download, Printer, ZoomIn, ZoomOut, RotateCcw, HelpCircle, X, Hand, LayoutTemplate, ArrowUp, ArrowDown, FilePlus, FileMinus, Move, Building } from 'lucide-react';
 import { enhanceDescription, generateResumeSummary, suggestSkills } from '../services/geminiService';
 import { Preview } from './Preview';
 import { RichTextEditor } from './RichTextEditor';
@@ -12,7 +12,7 @@ interface EditorProps {
   resumeName: string;
 }
 
-type SectionKey = 'personal' | 'experience' | 'education' | 'certifications' | 'skills' | 'projects' | 'export' | 'layout';
+type SectionKey = 'personal' | 'experience' | 'education' | 'internship' | 'certifications' | 'skills' | 'projects' | 'export' | 'layout';
 
 const SECTIONS: { key: SectionKey; label: string; icon: any; description: string }[] = [
   { 
@@ -32,6 +32,12 @@ const SECTIONS: { key: SectionKey; label: string; icon: any; description: string
     label: 'Education', 
     icon: GraduationCap,
     description: "List your academic background."
+  },
+  { 
+    key: 'internship', 
+    label: 'Internship', 
+    icon: Building,
+    description: "Detail your internship experiences."
   },
   { 
     key: 'certifications', 
@@ -69,6 +75,7 @@ const SECTION_LABELS: Record<string, string> = {
     summary: 'Professional Summary',
     experience: 'Work History',
     education: 'Education',
+    internship: 'Internships',
     volunteering: 'Volunteering',
     certifications: 'Certifications',
     skills: 'Skills',
@@ -269,6 +276,32 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
     onChange({ ...data, education: data.education.filter(item => item.id !== id) });
   };
 
+  const updateInternship = (id: string, field: keyof InternshipItem, value: any) => {
+    const currentInternships = data.internship || [];
+    onChange({
+      ...data,
+      internship: currentInternships.map(item => item.id === id ? { ...item, [field]: value } : item)
+    });
+  };
+
+  const addInternship = () => {
+    const newInternship: InternshipItem = {
+      id: Date.now().toString(),
+      designation: '',
+      organization: '',
+      startDate: '',
+      endDate: '',
+      location: '',
+      keySkills: '',
+      description: ''
+    };
+    onChange({ ...data, internship: [...(data.internship || []), newInternship] });
+  };
+
+  const removeInternship = (id: string) => {
+    onChange({ ...data, internship: (data.internship || []).filter(item => item.id !== id) });
+  };
+
   const updateVolunteering = (id: string, field: keyof VolunteeringItem, value: any) => {
     const currentVol = data.volunteering || [];
     onChange({
@@ -429,6 +462,19 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
       const enhancedText = await enhanceDescription(text, title);
       const enhancedHtml = convertPlainTextToHtml(enhancedText);
       updateExperience(id, 'description', enhancedHtml);
+    } catch (e) {
+      alert("Failed to enhance description.");
+    } finally {
+      setLoadingSection(null);
+    }
+  };
+  
+  const handleEnhanceInternshipDescription = async (id: string, text: string, title: string) => {
+    setLoadingSection(`int-${id}`);
+    try {
+      const enhancedText = await enhanceDescription(text, title);
+      const enhancedHtml = convertPlainTextToHtml(enhancedText);
+      updateInternship(id, 'description', enhancedHtml);
     } catch (e) {
       alert("Failed to enhance description.");
     } finally {
@@ -825,6 +871,70 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                         </div>
                     </div>
                   </div>
+                  )}
+
+                  {/* INTERNSHIP */}
+                  {activeSection === 'internship' && (
+                    <div className="space-y-6">
+                      <AnimatePresence mode="popLayout">
+                      {(data.internship || []).map((int) => (
+                          <motion.div 
+                              key={int.id} 
+                              layout
+                              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+                              transition={{ duration: 0.2 }}
+                              className={cardClass}
+                          >
+                              <button onClick={() => removeInternship(int.id)} className="absolute top-4 right-4 text-slate-400 dark:text-slate-500 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                  <div className="col-span-2 md:col-span-1">
+                                      <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Designation</label>
+                                      <input type="text" value={int.designation} onChange={(e) => updateInternship(int.id, 'designation', e.target.value)} className={inputClass} />
+                                  </div>
+                                  <div className="col-span-2 md:col-span-1">
+                                      <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Organization</label>
+                                      <input type="text" value={int.organization} onChange={(e) => updateInternship(int.id, 'organization', e.target.value)} className={inputClass} />
+                                  </div>
+                                  <div className="col-span-2">
+                                      <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Location</label>
+                                      <input type="text" value={int.location} onChange={(e) => updateInternship(int.id, 'location', e.target.value)} className={inputClass} />
+                                  </div>
+                                  <div>
+                                      <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Start Date</label>
+                                      <input type="text" placeholder="YYYY-MM" value={int.startDate} onChange={(e) => updateInternship(int.id, 'startDate', e.target.value)} className={inputClass} />
+                                  </div>
+                                  <div>
+                                      <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">End Date</label>
+                                      <input type="text" placeholder="YYYY-MM" value={int.endDate} onChange={(e) => updateInternship(int.id, 'endDate', e.target.value)} className={inputClass} />
+                                  </div>
+                                  <div className="col-span-2">
+                                      <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Key Skills</label>
+                                      <input type="text" placeholder="e.g. Java, SQL, Testing (Comma separated)" value={int.keySkills} onChange={(e) => updateInternship(int.id, 'keySkills', e.target.value)} className={inputClass} />
+                                  </div>
+                              </div>
+                              <div className="mt-4">
+                                  <div className="flex justify-between items-center mb-2">
+                                      <label className="block text-xs font-semibold text-slate-500 uppercase">Description</label>
+                                      <button onClick={() => handleEnhanceInternshipDescription(int.id, int.description, int.designation)} disabled={loadingSection === `int-${int.id}` || !int.description} className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 hover:bg-purple-100 dark:hover:bg-purple-900/50 px-3 py-1.5 rounded-md transition-colors disabled:opacity-50">
+                                          <Wand2 size={12} />
+                                          {loadingSection === `int-${int.id}` ? 'Enhancing...' : 'Enhance with AI'}
+                                      </button>
+                                  </div>
+                                  <RichTextEditor 
+                                      value={int.description} 
+                                      onChange={(val) => updateInternship(int.id, 'description', val)} 
+                                      placeholder="Describe your internship responsibilities..." 
+                                  />
+                              </div>
+                          </motion.div>
+                      ))}
+                      </AnimatePresence>
+                      <button onClick={addInternship} className="w-full py-4 flex items-center justify-center gap-2 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:border-blue-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all font-semibold">
+                          <Plus size={18} /> Add Internship
+                      </button>
+                    </div>
                   )}
 
                   {/* CERTIFICATIONS */}
