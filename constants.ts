@@ -76,5 +76,8 @@ export const INITIAL_RESUME_STATE: ResumeData = {
       startDate: '2022-01',
       endDate: '2022-04'
     }
+  ],
+  sectionLayout: [
+    ['summary', 'experience', 'education', 'projects', 'volunteering', 'certifications', 'skills', 'languages']
   ]
 };

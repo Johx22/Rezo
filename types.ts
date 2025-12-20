@@ -61,6 +61,7 @@ export interface ResumeData {
   skills: string[]; // Stored as comma separated string in UI, parsed array in type if needed, but simple array of strings is best
   languages: string[];
   projects: ProjectItem[];
+  sectionLayout: string[][]; // Array of pages, where each page is an array of section IDs
 }
 
 export enum SectionType {

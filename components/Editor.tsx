@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ResumeData, ExperienceItem, EducationItem, ProjectItem, VolunteeringItem } from '../types';
-import { Plus, Trash2, Wand2, ChevronRight, ChevronLeft, ArrowRight, User, Briefcase, GraduationCap, Lightbulb, Rocket, Upload, Eye, Award, Share2, Download, Printer, HeartHandshake, ZoomIn, ZoomOut, RotateCcw, HelpCircle, X, Hand } from 'lucide-react';
+import { Plus, Trash2, Wand2, ChevronRight, ChevronLeft, ArrowRight, User, Briefcase, GraduationCap, Lightbulb, Rocket, Upload, Eye, Award, Share2, Download, Printer, ZoomIn, ZoomOut, RotateCcw, HelpCircle, X, Hand, LayoutTemplate, ArrowUp, ArrowDown, FilePlus, FileMinus, Move } from 'lucide-react';
 import { enhanceDescription, generateResumeSummary, suggestSkills } from '../services/geminiService';
 import { Preview } from './Preview';
 import { RichTextEditor } from './RichTextEditor';
@@ -12,52 +12,69 @@ interface EditorProps {
   resumeName: string;
 }
 
-type SectionKey = 'personal' | 'experience' | 'education' | 'certifications' | 'skills' | 'projects' | 'export';
+type SectionKey = 'personal' | 'experience' | 'education' | 'certifications' | 'skills' | 'projects' | 'export' | 'layout';
 
 const SECTIONS: { key: SectionKey; label: string; icon: any; description: string }[] = [
   { 
     key: 'personal', 
-    label: 'Personal Details', 
+    label: 'Personal', 
     icon: User,
-    description: "In this section, you provide essential information about yourself so that potential employers can easily reach you."
+    description: "Provide essential information about yourself."
   },
   { 
     key: 'experience', 
-    label: 'Work History', 
+    label: 'Experience', 
     icon: Briefcase,
-    description: "Showcase your professional journey. Highlight your key roles, responsibilities, and achievements."
+    description: "Showcase your professional journey."
   },
   { 
     key: 'education', 
     label: 'Education', 
     icon: GraduationCap,
-    description: "List your academic background, degrees, and institutions to demonstrate your qualifications."
+    description: "List your academic background."
   },
   { 
     key: 'certifications', 
-    label: 'Certifications', 
+    label: 'Certs', 
     icon: Award,
-    description: "In this section, you list any additional professional (and relevant!) qualifications you have earned. This highlights your commitment to professional development and specialized knowledge in your field."
+    description: "List additional qualifications."
   },
   { 
     key: 'skills', 
     label: 'Skills', 
     icon: Lightbulb,
-    description: "Highlight your technical and soft skills. Tailor these to match the job requirements you are aiming for."
+    description: "Highlight your technical and soft skills."
   },
   { 
     key: 'projects', 
     label: 'Projects', 
     icon: Rocket,
-    description: "Show off specific projects, portfolios, or case studies to demonstrate your practical abilities."
+    description: "Show off specific projects."
+  },
+  {
+    key: 'layout',
+    label: 'Layout',
+    icon: LayoutTemplate,
+    description: "Organize your resume across multiple pages."
   },
   { 
     key: 'export', 
     label: 'Export', 
     icon: Share2,
-    description: "Your resume is ready! Choose your preferred format to export and you're good to go."
+    description: "Export your resume as PDF."
   },
 ];
+
+const SECTION_LABELS: Record<string, string> = {
+    summary: 'Professional Summary',
+    experience: 'Work History',
+    education: 'Education',
+    volunteering: 'Volunteering',
+    certifications: 'Certifications',
+    skills: 'Skills',
+    languages: 'Languages',
+    projects: 'Projects'
+};
 
 const pageVariants: Variants = {
   initial: (direction: number) => ({
@@ -326,6 +343,52 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
 
   const removeProject = (id: string) => {
     onChange({ ...data, projects: data.projects.filter(item => item.id !== id)});
+  };
+
+  // --- Layout Management ---
+  const handleAddPage = () => {
+      onChange({
+          ...data,
+          sectionLayout: [...data.sectionLayout, []]
+      });
+  };
+
+  const handleRemovePage = (pageIndex: number) => {
+      const layout = [...data.sectionLayout];
+      const sectionsToMove = layout[pageIndex];
+      // Move orphaned sections to the previous page (or first page if no prev)
+      const targetPageIndex = pageIndex > 0 ? pageIndex - 1 : 0;
+      if (layout.length > 1) {
+          layout[targetPageIndex] = [...layout[targetPageIndex], ...sectionsToMove];
+          layout.splice(pageIndex, 1);
+          onChange({ ...data, sectionLayout: layout });
+      }
+  };
+
+  const handleMoveSection = (section: string, fromPage: number, toPage: number) => {
+      const layout = data.sectionLayout.map(page => [...page]);
+      
+      // Remove from old page
+      layout[fromPage] = layout[fromPage].filter(s => s !== section);
+      
+      // Add to new page
+      layout[toPage] = [...layout[toPage], section];
+      
+      onChange({ ...data, sectionLayout: layout });
+  };
+
+  const handleReorderSection = (section: string, pageIndex: number, direction: 'up' | 'down') => {
+      const layout = data.sectionLayout.map(page => [...page]);
+      const page = layout[pageIndex];
+      const currentIndex = page.indexOf(section);
+      
+      if (direction === 'up' && currentIndex > 0) {
+          [page[currentIndex], page[currentIndex - 1]] = [page[currentIndex - 1], page[currentIndex]];
+      } else if (direction === 'down' && currentIndex < page.length - 1) {
+          [page[currentIndex], page[currentIndex + 1]] = [page[currentIndex + 1], page[currentIndex]];
+      }
+      
+      onChange({ ...data, sectionLayout: layout });
   };
 
   const handleZoomIn = () => {
@@ -871,6 +934,108 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                           <Plus size={18} /> Add Project
                       </button>
                     </div>
+                  )}
+
+                  {/* LAYOUT MANAGER */}
+                  {activeSection === 'layout' && (
+                      <div className="space-y-6">
+                          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800 text-sm text-blue-800 dark:text-blue-200">
+                              <p className="font-semibold mb-1">Manage Pages & Sections</p>
+                              <p>Organize your content across pages. Dragging is not supported yet, please use the arrows to move sections.</p>
+                          </div>
+
+                          <AnimatePresence>
+                          {(data.sectionLayout || []).map((pageSections, pageIndex) => (
+                              <motion.div 
+                                key={`page-${pageIndex}`}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="bg-slate-100 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner"
+                              >
+                                  <div className="flex justify-between items-center mb-3">
+                                      <h3 className="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                                          <div className="w-6 h-6 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-xs shadow-sm border border-slate-200 dark:border-slate-700">
+                                              {pageIndex + 1}
+                                          </div>
+                                          Page {pageIndex + 1}
+                                      </h3>
+                                      {pageIndex > 0 && pageSections.length === 0 && (
+                                          <button 
+                                            onClick={() => handleRemovePage(pageIndex)}
+                                            className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-1.5 rounded-lg transition-colors flex items-center gap-1 text-xs font-medium"
+                                          >
+                                              <Trash2 size={14} /> Remove Page
+                                          </button>
+                                      )}
+                                  </div>
+
+                                  <div className="space-y-2 min-h-[50px]">
+                                      {pageSections.length === 0 && (
+                                          <div className="text-center py-4 text-xs text-slate-400 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
+                                              Empty Page
+                                          </div>
+                                      )}
+                                      {pageSections.map((sectionId, sectionIndex) => (
+                                          <div key={sectionId} className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between group">
+                                              <span className="font-medium text-slate-700 dark:text-slate-200 text-sm">
+                                                  {SECTION_LABELS[sectionId] || sectionId}
+                                              </span>
+                                              
+                                              <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                                  {/* Reorder within page */}
+                                                  <div className="flex bg-slate-100 dark:bg-slate-800 rounded p-0.5">
+                                                      <button 
+                                                          disabled={sectionIndex === 0}
+                                                          onClick={() => handleReorderSection(sectionId, pageIndex, 'up')}
+                                                          className="p-1 hover:bg-white dark:hover:bg-slate-700 rounded text-slate-500 disabled:opacity-30 disabled:hover:bg-transparent"
+                                                          title="Move Up"
+                                                      >
+                                                          <ArrowUp size={14} />
+                                                      </button>
+                                                      <button 
+                                                          disabled={sectionIndex === pageSections.length - 1}
+                                                          onClick={() => handleReorderSection(sectionId, pageIndex, 'down')}
+                                                          className="p-1 hover:bg-white dark:hover:bg-slate-700 rounded text-slate-500 disabled:opacity-30 disabled:hover:bg-transparent"
+                                                          title="Move Down"
+                                                      >
+                                                          <ArrowDown size={14} />
+                                                      </button>
+                                                  </div>
+
+                                                  {/* Move between pages */}
+                                                  <div className="flex bg-blue-50 dark:bg-blue-900/30 rounded p-0.5 ml-2">
+                                                      <button 
+                                                          disabled={pageIndex === 0}
+                                                          onClick={() => handleMoveSection(sectionId, pageIndex, pageIndex - 1)}
+                                                          className="p-1 hover:bg-white dark:hover:bg-slate-700 rounded text-blue-600 dark:text-blue-400 disabled:opacity-30 disabled:hover:bg-transparent"
+                                                          title="Move to Previous Page"
+                                                      >
+                                                          <FileMinus size={14} />
+                                                      </button>
+                                                      <button 
+                                                          disabled={pageIndex === (data.sectionLayout?.length || 1) - 1}
+                                                          onClick={() => handleMoveSection(sectionId, pageIndex, pageIndex + 1)}
+                                                          className="p-1 hover:bg-white dark:hover:bg-slate-700 rounded text-blue-600 dark:text-blue-400 disabled:opacity-30 disabled:hover:bg-transparent"
+                                                          title="Move to Next Page"
+                                                      >
+                                                          <FilePlus size={14} />
+                                                      </button>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      ))}
+                                  </div>
+                              </motion.div>
+                          ))}
+                          </AnimatePresence>
+
+                          <button 
+                              onClick={handleAddPage}
+                              className="w-full py-3 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:border-blue-500 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-colors font-medium flex items-center justify-center gap-2"
+                          >
+                              <Plus size={18} /> Add New Page
+                          </button>
+                      </div>
                   )}
 
                   {/* EXPORT */}
