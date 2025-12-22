@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ResumeData, ExperienceItem, EducationItem, ProjectItem, VolunteeringItem, InternshipItem } from '../types';
-import { Plus, Trash2, Wand2, ChevronRight, ChevronLeft, ArrowRight, User, Briefcase, GraduationCap, Lightbulb, Rocket, Upload, Eye, Award, Share2, Download, Printer, ZoomIn, ZoomOut, RotateCcw, HelpCircle, X, Hand, LayoutTemplate, ArrowUp, ArrowDown, FilePlus, FileMinus, Move, Building, FileJson } from 'lucide-react';
-import { enhanceDescription, generateResumeSummary, suggestSkills } from '../services/geminiService';
+import { Plus, Trash2, ChevronRight, ChevronLeft, ArrowRight, User, Briefcase, GraduationCap, Lightbulb, Rocket, Upload, Eye, Award, Share2, Download, Printer, ZoomIn, ZoomOut, RotateCcw, HelpCircle, X, Hand, LayoutTemplate, ArrowUp, ArrowDown, FilePlus, FileMinus, Move, Building, FileJson } from 'lucide-react';
 import { Preview } from './Preview';
 import { RichTextEditor } from './RichTextEditor';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
@@ -111,44 +110,9 @@ const pageVariants: Variants = {
   })
 };
 
-// Helper to convert plain text from AI to basic HTML for the editor
-const convertPlainTextToHtml = (text: string) => {
-    if (!text) return '';
-    if (text.includes('<ul>') || text.includes('<li>') || text.includes('<b>')) return text;
-
-    const lines = text.split('\n');
-    let html = '';
-    let inList = false;
-
-    lines.forEach(line => {
-        const trimmed = line.trim();
-        if (!trimmed) return;
-
-        if (trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('*')) {
-            if (!inList) {
-                html += '<ul>';
-                inList = true;
-            }
-            const content = trimmed.replace(/^[•\-*]\s*/, '');
-            html += `<li>${content}</li>`;
-        } else {
-            if (inList) {
-                html += '</ul>';
-                inList = false;
-            }
-            html += `<div>${trimmed}</div>`;
-        }
-    });
-
-    if (inList) html += '</ul>';
-    if (!html && text) return `<div>${text}</div>`;
-    return html;
-};
-
 export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) => {
   const [activeSection, setActiveSection] = useState<SectionKey>('personal');
   const [direction, setDirection] = useState(0);
-  const [loadingSection, setLoadingSection] = useState<string | null>(null);
   const [previewScale, setPreviewScale] = useState(0.45);
   const [showPhotoAdvice, setShowPhotoAdvice] = useState(false);
   const [isHandMode, setIsHandMode] = useState(false);
@@ -457,57 +421,6 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
     URL.revokeObjectURL(url);
   };
 
-  const handleGenerateSummary = async () => {
-    setLoadingSection('summary');
-    try {
-      const summary = await generateResumeSummary(data);
-      onChange({ ...data, summary });
-    } catch (e) {
-      alert("Failed to generate summary. Please check your API key.");
-    } finally {
-      setLoadingSection(null);
-    }
-  };
-
-  const handleEnhanceDescription = async (id: string, text: string, title: string) => {
-    setLoadingSection(`exp-${id}`);
-    try {
-      const enhancedText = await enhanceDescription(text, title);
-      const enhancedHtml = convertPlainTextToHtml(enhancedText);
-      updateExperience(id, 'description', enhancedHtml);
-    } catch (e) {
-      alert("Failed to enhance description.");
-    } finally {
-      setLoadingSection(null);
-    }
-  };
-  
-  const handleEnhanceInternshipDescription = async (id: string, text: string, title: string) => {
-    setLoadingSection(`int-${id}`);
-    try {
-      const enhancedText = await enhanceDescription(text, title);
-      const enhancedHtml = convertPlainTextToHtml(enhancedText);
-      updateInternship(id, 'description', enhancedHtml);
-    } catch (e) {
-      alert("Failed to enhance description.");
-    } finally {
-      setLoadingSection(null);
-    }
-  };
-
-  const handleSuggestSkills = async () => {
-    setLoadingSection('skills');
-    try {
-      const newSkills = await suggestSkills(data.personalInfo.title, data.skills);
-      const uniqueSkills = Array.from(new Set([...data.skills, ...newSkills])).filter(Boolean);
-      onChange({ ...data, skills: uniqueSkills });
-    } catch (e) {
-        alert("Failed to suggest skills.");
-    } finally {
-        setLoadingSection(null);
-    }
-  };
-
   const goToNext = () => {
     const currentIndex = SECTIONS.findIndex(s => s.key === activeSection);
     if (currentIndex < SECTIONS.length - 1) {
@@ -632,10 +545,6 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                         <div className="col-span-2 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm animate-in fade-in slide-in-from-top-2 transition-colors">
                             <div className="flex justify-between items-center mb-2">
                                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-400">Summary Text</label>
-                                <button onClick={handleGenerateSummary} disabled={loadingSection === 'summary'} className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-3 py-1.5 rounded-md transition-colors disabled:opacity-50">
-                                    <Wand2 size={12} />
-                                    {loadingSection === 'summary' ? 'Writing...' : 'AI Generate'}
-                                </button>
                             </div>
                             <textarea 
                                 value={data.summary} 
@@ -748,10 +657,6 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                           <div className="mt-4">
                               <div className="flex justify-between items-center mb-2">
                                   <label className="block text-xs font-semibold text-slate-500 uppercase">Description</label>
-                                  <button onClick={() => handleEnhanceDescription(exp.id, exp.description, exp.position)} disabled={loadingSection === `exp-${exp.id}` || !exp.description} className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 hover:bg-purple-100 dark:hover:bg-purple-900/50 px-3 py-1.5 rounded-md transition-colors disabled:opacity-50">
-                                      <Wand2 size={12} />
-                                      {loadingSection === `exp-${exp.id}` ? 'Enhancing...' : 'Enhance with AI'}
-                                  </button>
                               </div>
                               <RichTextEditor 
                                   value={exp.description} 
@@ -930,10 +835,6 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                               <div className="mt-4">
                                   <div className="flex justify-between items-center mb-2">
                                       <label className="block text-xs font-semibold text-slate-500 uppercase">Description</label>
-                                      <button onClick={() => handleEnhanceInternshipDescription(int.id, int.description, int.designation)} disabled={loadingSection === `int-${int.id}` || !int.description} className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 hover:bg-purple-100 dark:hover:bg-purple-900/50 px-3 py-1.5 rounded-md transition-colors disabled:opacity-50">
-                                          <Wand2 size={12} />
-                                          {loadingSection === `int-${int.id}` ? 'Enhancing...' : 'Enhance with AI'}
-                                      </button>
                                   </div>
                                   <RichTextEditor 
                                       value={int.description} 
@@ -989,10 +890,6 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                       <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
                         <div className="flex justify-between items-center mb-4">
                             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Skills List</label>
-                            <button onClick={handleSuggestSkills} disabled={loadingSection === 'skills' || !data.personalInfo.title} className="flex items-center gap-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 px-4 py-2 rounded-lg transition-colors disabled:opacity-50">
-                                <Wand2 size={16} />
-                                {loadingSection === 'skills' ? 'Analyzing...' : 'Suggest Skills with AI'}
-                            </button>
                         </div>
                         <p className="text-xs text-slate-500 mb-3">Separate skills with commas (e.g. React, Python, Leadership)</p>
                         <textarea value={data.skills.join(', ')} onChange={handleSkillsChange} rows={8} className={textAreaClass} placeholder="e.g. Figma, Sketch, HTML/CSS, Agile" />
@@ -1272,13 +1169,14 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
             {prevSection ? `Back: ${prevSection.label}` : 'Back'}
          </button>
          
-         <button 
-            onClick={goToNext}
-            disabled={!nextSection}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md dark:shadow-lg dark:shadow-blue-900/30 transition-all hover:shadow-lg dark:hover:shadow-xl"
-         >
-            {nextSection ? `Next: ${nextSection.label}` : 'Finish'} <ArrowRight size={18} />
-         </button>
+         {nextSection && (
+            <button 
+                onClick={goToNext}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md dark:shadow-lg dark:shadow-blue-900/30 transition-all hover:shadow-lg dark:hover:shadow-xl"
+            >
+                {`Next: ${nextSection.label}`} <ArrowRight size={18} />
+            </button>
+         )}
       </div>
 
       {/* Photo Advice Modal */}
