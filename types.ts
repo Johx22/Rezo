@@ -1,3 +1,4 @@
+
 export interface ExperienceItem {
   id: string;
   company: string;
@@ -48,6 +49,15 @@ export interface ProjectItem {
   endDate?: string;
 }
 
+export interface PublicationItem {
+  id: string;
+  name: string;
+  publisher: string;
+  date: string;
+  link: string;
+  description: string;
+}
+
 export interface PersonalInfo {
   fullName: string;
   title: string;
@@ -73,6 +83,7 @@ export interface ResumeData {
   skills: string[]; // Stored as comma separated string in UI, parsed array in type if needed, but simple array of strings is best
   languages: string[];
   projects: ProjectItem[];
+  publications: PublicationItem[];
   sectionLayout: string[][]; // Array of pages, where each page is an array of section IDs
 }
 
@@ -84,5 +95,6 @@ export enum SectionType {
   INTERNSHIP = 'INTERNSHIP',
   CERTIFICATIONS = 'CERTIFICATIONS',
   SKILLS = 'SKILLS',
-  PROJECTS = 'PROJECTS'
+  PROJECTS = 'PROJECTS',
+  PUBLICATIONS = 'PUBLICATIONS'
 }

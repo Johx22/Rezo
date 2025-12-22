@@ -1,3 +1,4 @@
+
 import { ResumeData } from './types';
 
 export const INITIAL_RESUME_STATE: ResumeData = {
@@ -22,7 +23,8 @@ export const INITIAL_RESUME_STATE: ResumeData = {
   skills: [],
   languages: [],
   projects: [],
+  publications: [],
   sectionLayout: [
-    ['summary', 'experience', 'education', 'internship', 'projects', 'volunteering', 'certifications', 'skills', 'languages']
+    ['summary', 'experience', 'education', 'internship', 'projects', 'publications', 'volunteering', 'certifications', 'skills', 'languages']
   ]
 };

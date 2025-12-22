@@ -13,7 +13,7 @@ export const Preview: React.FC<PreviewProps> = ({ data, scale = 1 }) => {
   // Default to a single page with all sections if layout is missing (backward compatibility)
   const layout = data.sectionLayout && data.sectionLayout.length > 0 
     ? data.sectionLayout 
-    : [['summary', 'experience', 'education', 'internship', 'volunteering', 'certifications', 'projects', 'skills', 'languages']];
+    : [['summary', 'experience', 'education', 'internship', 'volunteering', 'certifications', 'projects', 'publications', 'skills', 'languages']];
 
   // Calculate approximate total height for margin adjustment when scaled
   const totalHeightMM = layout.length * 297 + (layout.length - 1) * 8; // 8mm gap approx
@@ -172,6 +172,39 @@ export const Preview: React.FC<PreviewProps> = ({ data, scale = 1 }) => {
                                      <div 
                                         className="text-sm text-slate-600 leading-relaxed pl-1 [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_li]:mb-1"
                                         dangerouslySetInnerHTML={{ __html: proj.description }}
+                                    />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+              );
+          case 'publications':
+              return data.publications && data.publications.length > 0 && (
+                <section key="publications" className="break-inside-avoid mb-6">
+                    <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b-2 border-slate-200 pb-1 mb-3">Publications</h2>
+                    <div className="space-y-4">
+                        {data.publications.map((pub) => (
+                            <div key={pub.id} className="break-inside-avoid">
+                                <div className="flex justify-between items-baseline mb-1">
+                                    <h3 className="font-bold text-slate-800">{pub.name}</h3>
+                                    <span className="text-xs font-medium text-slate-500 whitespace-nowrap">
+                                        {pub.date}
+                                    </span>
+                                </div>
+                                <div className="text-sm font-semibold text-blue-700 mb-1">{pub.publisher}</div>
+                                {pub.link && (
+                                    <div className="flex items-center gap-1.5 mb-2">
+                                        <LinkIcon size={12} className="text-blue-500" />
+                                        <a href={`https://${pub.link.replace(/^https?:\/\//, '')}`} target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:underline">
+                                            {pub.link}
+                                        </a>
+                                    </div>
+                                )}
+                                {pub.description && (
+                                     <div 
+                                        className="text-sm text-slate-600 leading-relaxed pl-1 [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_li]:mb-1"
+                                        dangerouslySetInnerHTML={{ __html: pub.description }}
                                     />
                                 )}
                             </div>

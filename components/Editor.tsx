@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ResumeData, ExperienceItem, EducationItem, ProjectItem, VolunteeringItem, InternshipItem } from '../types';
-import { Plus, Trash2, ChevronRight, ChevronLeft, ArrowRight, User, Briefcase, GraduationCap, Lightbulb, Rocket, Upload, Eye, Award, Share2, Download, Printer, ZoomIn, ZoomOut, RotateCcw, HelpCircle, X, Hand, LayoutTemplate, ArrowUp, ArrowDown, FilePlus, FileMinus, Move, Building, FileJson } from 'lucide-react';
+import { ResumeData, ExperienceItem, EducationItem, ProjectItem, VolunteeringItem, InternshipItem, PublicationItem } from '../types';
+import { Plus, Trash2, ChevronRight, ChevronLeft, ArrowRight, User, Briefcase, GraduationCap, Lightbulb, Rocket, Upload, Eye, Award, Share2, Download, Printer, ZoomIn, ZoomOut, RotateCcw, HelpCircle, X, Hand, LayoutTemplate, ArrowUp, ArrowDown, FilePlus, FileMinus, Move, Building, FileJson, BookOpen } from 'lucide-react';
 import { Preview } from './Preview';
 import { RichTextEditor } from './RichTextEditor';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
@@ -11,7 +11,7 @@ interface EditorProps {
   resumeName: string;
 }
 
-type SectionKey = 'personal' | 'experience' | 'education' | 'internship' | 'certifications' | 'skills' | 'projects' | 'export' | 'layout';
+type SectionKey = 'personal' | 'experience' | 'education' | 'internship' | 'certifications' | 'skills' | 'projects' | 'publications' | 'export' | 'layout';
 
 const SECTIONS: { key: SectionKey; label: string; icon: any; description: string }[] = [
   { 
@@ -56,6 +56,12 @@ const SECTIONS: { key: SectionKey; label: string; icon: any; description: string
     icon: Rocket,
     description: "Show off specific projects."
   },
+  { 
+    key: 'publications', 
+    label: 'Publications', 
+    icon: BookOpen,
+    description: "List your published works and articles."
+  },
   {
     key: 'layout',
     label: 'Layout',
@@ -79,7 +85,8 @@ const SECTION_LABELS: Record<string, string> = {
     certifications: 'Certifications',
     skills: 'Skills',
     languages: 'Languages',
-    projects: 'Projects'
+    projects: 'Projects',
+    publications: 'Publications'
 };
 
 const pageVariants: Variants = {
@@ -340,6 +347,31 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
 
   const removeProject = (id: string) => {
     onChange({ ...data, projects: data.projects.filter(item => item.id !== id)});
+  };
+
+  // --- Publications Helpers ---
+  const updatePublication = (id: string, field: keyof PublicationItem, value: string) => {
+    const currentPubs = data.publications || [];
+    onChange({
+       ...data,
+       publications: currentPubs.map(item => item.id === id ? { ...item, [field]: value} : item)
+    });
+  };
+
+  const addPublication = () => {
+    const newPub: PublicationItem = {
+       id: Date.now().toString(),
+       name: '',
+       publisher: '',
+       date: '',
+       link: '',
+       description: ''
+    };
+    onChange({ ...data, publications: [...(data.publications || []), newPub]});
+  };
+
+  const removePublication = (id: string) => {
+    onChange({ ...data, publications: (data.publications || []).filter(item => item.id !== id)});
   };
 
   // --- Layout Management ---
@@ -952,6 +984,56 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                       </AnimatePresence>
                       <button onClick={addProject} className="w-full py-4 flex items-center justify-center gap-2 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:border-blue-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all font-semibold">
                           <Plus size={18} /> Add Project
+                      </button>
+                    </div>
+                  )}
+
+                  {/* PUBLICATIONS */}
+                  {activeSection === 'publications' && (
+                    <div className="space-y-6">
+                      <AnimatePresence mode="popLayout">
+                      {(data.publications || []).map((pub) => (
+                          <motion.div 
+                            key={pub.id} 
+                            layout
+                            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+                            transition={{ duration: 0.2 }}
+                            className={cardClass}
+                          >
+                            <button onClick={() => removePublication(pub.id)} className="absolute top-4 right-4 text-slate-400 dark:text-slate-500 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="col-span-2">
+                                    <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Publication Name</label>
+                                    <input type="text" placeholder="e.g. Modern UI Principles" value={pub.name} onChange={(e) => updatePublication(pub.id, 'name', e.target.value)} className={inputClass} />
+                                </div>
+                                <div className="col-span-2 md:col-span-1">
+                                    <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Publisher</label>
+                                    <input type="text" placeholder="e.g. Tech Weekly Journal" value={pub.publisher} onChange={(e) => updatePublication(pub.id, 'publisher', e.target.value)} className={inputClass} />
+                                </div>
+                                <div className="col-span-2 md:col-span-1">
+                                    <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Date</label>
+                                    <input type="text" placeholder="YYYY-MM" value={pub.date} onChange={(e) => updatePublication(pub.id, 'date', e.target.value)} className={inputClass} />
+                                </div>
+                                <div className="col-span-2">
+                                    <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Website (Optional)</label>
+                                    <input type="text" placeholder="e.g. medium.com/..." value={pub.link} onChange={(e) => updatePublication(pub.id, 'link', e.target.value)} className={inputClass} />
+                                </div>
+                                <div className="col-span-2">
+                                    <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Description</label>
+                                    <RichTextEditor 
+                                        value={pub.description} 
+                                        onChange={(val) => updatePublication(pub.id, 'description', val)} 
+                                        placeholder="• An in-depth analysis of current web design trends..."
+                                    />
+                                </div>
+                            </div>
+                          </motion.div>
+                      ))}
+                      </AnimatePresence>
+                      <button onClick={addPublication} className="w-full py-4 flex items-center justify-center gap-2 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:border-blue-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all font-semibold">
+                          <Plus size={18} /> Add Publication
                       </button>
                     </div>
                   )}
