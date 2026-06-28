@@ -80,7 +80,8 @@ export interface ResumeData {
   internship: InternshipItem[];
   volunteering: VolunteeringItem[];
   certifications: string[];
-  skills: string[]; // Stored as comma separated string in UI, parsed array in type if needed, but simple array of strings is best
+  skills: string[];
+  interests?: string[]; // Stored as comma separated string in UI, parsed array in type if needed, but simple array of strings is best
   languages: string[];
   projects: ProjectItem[];
   publications: PublicationItem[];

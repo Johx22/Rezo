@@ -21,6 +21,7 @@ export const INITIAL_RESUME_STATE: ResumeData = {
   volunteering: [],
   certifications: [],
   skills: [],
+  interests: [],
   languages: [],
   projects: [],
   publications: [],

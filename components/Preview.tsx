@@ -214,13 +214,23 @@ export const Preview: React.FC<PreviewProps> = ({ data, scale = 1 }) => {
                 </section>
               );
           case 'skills':
-              return data.skills.length > 0 && (
+              const hasSkills = data.skills.length > 0;
+              const hasInterests = data.interests && data.interests.length > 0;
+              return (hasSkills || hasInterests) && (
                 <section key="skills" className="break-inside-avoid text-[12.5px]">
                     <h2 className="text-[13px] font-bold uppercase tracking-wide border-b border-slate-950 pb-[2px] mb-2 text-left">Skills & Interests</h2>
-                    <p className="leading-relaxed">
-                        <span className="font-bold">Skills: </span>
-                        {data.skills.join(', ')}
-                    </p>
+                    {hasSkills && (
+                        <p className="leading-relaxed">
+                            <span className="font-bold">Skills: </span>
+                            {data.skills.join(', ')}
+                        </p>
+                    )}
+                    {hasInterests && (
+                        <p className="leading-relaxed mt-1">
+                            <span className="font-bold">Interests: </span>
+                            {data.interests.join(', ')}
+                        </p>
+                    )}
                 </section>
               );
           case 'languages':

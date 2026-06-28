@@ -314,6 +314,11 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
     onChange({ ...data, languages });
   };
 
+  const handleInterestsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const interests = e.target.value.split(',').map(s => s.trim());
+    onChange({ ...data, interests });
+  };
+
   const updateProject = (id: string, field: keyof ProjectItem, value: string) => {
      onChange({
         ...data,
@@ -892,6 +897,15 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                         </div>
                         <p className="text-xs text-slate-500 mb-3">Separate skills with commas (e.g. React, Python, Leadership)</p>
                         <textarea value={data.skills.join(', ')} onChange={handleSkillsChange} rows={8} className={textAreaClass} placeholder="e.g. Figma, Sketch, HTML/CSS, Agile" />
+                      </div>
+
+                      {/* Interests Section */}
+                      <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <div className="flex justify-between items-center mb-4">
+                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Interests</label>
+                        </div>
+                        <p className="text-xs text-slate-500 mb-3">Separate interests with commas (e.g. Photography, Reading, Football)</p>
+                        <textarea value={(data.interests || []).join(', ')} onChange={handleInterestsChange} rows={4} className={textAreaClass} placeholder="e.g. Photography, Hiking, Chess" />
                       </div>
 
                       {/* Languages Section */}
