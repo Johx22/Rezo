@@ -63,8 +63,21 @@ Make sure you have **Node.js** (v18+) installed.
    npm run dev
    ```
 
-4. **Production Build & Bundling**:
+3. **Production Build & Bundling**:
    To test build artifacts and compile performance:
    ```bash
    npm run build
    ```
+
+---
+
+## 🌐 Deployment (Vercel)
+
+Rezo is optimized for hosting as a static site on **Vercel** with zero configuration:
+
+1. **Vercel Project Setup**: Import your repository into Vercel.
+2. **Framework Preset**: Vercel automatically detects the Vite structure and applies the standard configuration:
+   - **Framework Preset**: `Vite`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+3. **Legacy Peer Dependencies**: Peer dependency resolution is handled automatically via `.npmrc` (`legacy-peer-deps=true`).
