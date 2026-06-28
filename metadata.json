@@ -1,5 +1,5 @@
 {
   "name": "Rezo",
-  "description": "Rezo - A smart, real-time resume builder powered by Gemini AI.",
+  "description": "Rezo - A clean, LaTeX-inspired real-time resume builder.",
   "requestFramePermissions": []
 }

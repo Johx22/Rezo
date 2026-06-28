@@ -1,6 +1,6 @@
 # Rezo — LaTeX-Inspired Resume Builder
 
-Rezo is an interactive, AI-powered resume builder built with React, TypeScript, and Tailwind CSS. Originally created in Google AI Studio, Rezo has been refined to feature a distraction-free, wizard-like editor and a high-fidelity LaTeX-style resume preview page designed to be printed directly to PDF.
+Rezo is an interactive resume builder built with React, TypeScript, and Tailwind CSS. Originally created in Google AI Studio, Rezo has been refined to feature a distraction-free, wizard-like editor and a high-fidelity LaTeX-style resume preview page designed to be printed directly to PDF.
 
 ---
 
@@ -58,13 +58,7 @@ Make sure you have **Node.js** (v18+) installed.
    npm install
    ```
 
-2. **Configure API Keys**:
-   Create a `.env.local` file in the root directory:
-   ```env
-   VITE_GEMINI_API_KEY=your_gemini_api_key_here
-   ```
-
-3. **Launch Dev Server**:
+2. **Launch Dev Server**:
    ```bash
    npm run dev
    ```
