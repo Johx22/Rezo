@@ -5,7 +5,7 @@ import { Editor } from './components/Editor';
 import { Preview } from './components/Preview';
 import { Background } from './components/Background';
 import { LandingPage } from './components/LandingPage';
-import { Moon, Sun, Pencil, Check, X, FileJson } from 'lucide-react';
+import { Moon, Sun, Pencil, Check, X, FileJson, Download } from 'lucide-react';
 
 // --- Main Editor Component (The actual App) ---
 const ResumeEditor: React.FC = () => {
@@ -83,6 +83,27 @@ const ResumeEditor: React.FC = () => {
     reader.readAsText(file);
     // Reset value to allow selecting the same file again if needed
     event.target.value = '';
+  };
+
+  const handleDownloadPdf = () => {
+    const originalTitle = document.title;
+    document.title = resumeName || "Untitled Resume";
+    window.print();
+    setTimeout(() => {
+        document.title = originalTitle;
+    }, 500);
+  };
+
+  const handleExportJson = () => {
+    const blob = new Blob([JSON.stringify(resumeData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${resumeName || 'resume'}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -166,6 +187,16 @@ const ResumeEditor: React.FC = () => {
         {/* Right: Actions */}
         <div className="flex items-center justify-end gap-2 sm:gap-4 w-[200px] lg:w-[280px]">
             
+            {/* Download PDF Button */}
+            <button 
+                onClick={handleDownloadPdf}
+                className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium shadow-sm hover:shadow-md"
+                title="Download PDF Resume"
+            >
+                <Download size={18} />
+                <span className="hidden lg:inline">Download</span>
+            </button>
+
             {/* Import JSON Button */}
             <button 
                 onClick={handleImportClick}
@@ -174,6 +205,16 @@ const ResumeEditor: React.FC = () => {
             >
                 <FileJson size={18} />
                 <span className="hidden lg:inline">Import</span>
+            </button>
+
+            {/* Export JSON Button */}
+            <button 
+                onClick={handleExportJson}
+                className="flex items-center gap-2 px-3 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-sm font-medium"
+                title="Export JSON Data"
+            >
+                <FileJson size={18} />
+                <span className="hidden lg:inline">Export</span>
             </button>
 
             {/* Theme Switcher */}

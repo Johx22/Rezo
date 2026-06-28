@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ResumeData, ExperienceItem, EducationItem, ProjectItem, VolunteeringItem, InternshipItem, PublicationItem } from '../types';
-import { Plus, Trash2, ChevronRight, ChevronLeft, ArrowRight, User, Briefcase, GraduationCap, Lightbulb, Rocket, Upload, Eye, Award, Share2, Download, Printer, ZoomIn, ZoomOut, RotateCcw, HelpCircle, X, Hand, LayoutTemplate, ArrowUp, ArrowDown, FilePlus, FileMinus, Move, Building, FileJson, BookOpen } from 'lucide-react';
+import { Plus, Trash2, ChevronRight, ChevronLeft, ArrowRight, User, Briefcase, GraduationCap, Lightbulb, Rocket, Upload, Eye, Award, ZoomIn, ZoomOut, RotateCcw, HelpCircle, X, Hand, LayoutTemplate, ArrowUp, ArrowDown, FilePlus, FileMinus, Move, Building, FileJson, BookOpen } from 'lucide-react';
 import { Preview } from './Preview';
 import { RichTextEditor } from './RichTextEditor';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
@@ -11,7 +11,7 @@ interface EditorProps {
   resumeName: string;
 }
 
-type SectionKey = 'personal' | 'experience' | 'education' | 'internship' | 'certifications' | 'skills' | 'projects' | 'publications' | 'export' | 'layout';
+type SectionKey = 'personal' | 'experience' | 'education' | 'internship' | 'certifications' | 'skills' | 'projects' | 'publications' | 'layout';
 
 const SECTIONS: { key: SectionKey; label: string; icon: any; description: string }[] = [
   { 
@@ -68,12 +68,6 @@ const SECTIONS: { key: SectionKey; label: string; icon: any; description: string
     icon: LayoutTemplate,
     description: "Organize your resume across multiple pages."
   },
-  { 
-    key: 'export', 
-    label: 'Export', 
-    icon: Share2,
-    description: "Export your resume as PDF."
-  },
 ];
 
 const SECTION_LABELS: Record<string, string> = {
@@ -120,7 +114,7 @@ const pageVariants: Variants = {
 export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) => {
   const [activeSection, setActiveSection] = useState<SectionKey>('personal');
   const [direction, setDirection] = useState(0);
-  const [previewScale, setPreviewScale] = useState(0.45);
+  const [previewScale, setPreviewScale] = useState(0.5);
   const [showPhotoAdvice, setShowPhotoAdvice] = useState(false);
   const [isHandMode, setIsHandMode] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -427,31 +421,9 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
       setPreviewScale(prev => Math.max(prev - 0.05, 0.25));
   };
   const handleZoomReset = () => {
-      setPreviewScale(0.45);
+      setPreviewScale(0.5);
   };
 
-  // Unified Print Handler for both "Download PDF" and "Print" buttons
-  const triggerPrint = () => {
-    const originalTitle = document.title;
-    document.title = resumeName || "Untitled Resume"; // Set title so the PDF filename is correct
-    window.print();
-    setTimeout(() => {
-        document.title = originalTitle; // Revert title
-    }, 500);
-  };
-
-  // JSON Export Handler
-  const handleExportJson = () => {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${resumeName || 'resume'}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
 
   const goToNext = () => {
     const currentIndex = SECTIONS.findIndex(s => s.key === activeSection);
@@ -1150,84 +1122,88 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                       </div>
                   )}
 
-                  {/* EXPORT */}
-                  {activeSection === 'export' && (
-                    <div className="flex flex-col gap-6">
-                      <div className="bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm text-center transition-colors">
-                          <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-2">Ready to ship?</h3>
-                          <p className="text-slate-500 mb-8 max-w-md mx-auto">Your resume looks great! Choose one of the options below to export your document.</p>
-                          
-                          <div className="flex flex-col sm:flex-row justify-center gap-4">
-                              {/* Download PDF (Direct) */}
-                              <button 
-                                onClick={triggerPrint}
-                                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 dark:bg-blue-600 text-white rounded-xl font-medium hover:bg-slate-800 dark:hover:bg-blue-700 transition-colors shadow-sm dark:shadow-lg dark:shadow-blue-900/20"
-                              >
-                                  <Download size={18} /> Download PDF
-                              </button>
-                              
-                              {/* Export JSON */}
-                              <button 
-                                onClick={handleExportJson}
-                                className="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
-                              >
-                                  <FileJson size={18} /> Export JSON
-                              </button>
 
-                              {/* Print */}
-                              <button onClick={triggerPrint} className="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
-                                  <Printer size={18} /> Print
-                              </button>
-                          </div>
-                      </div>
-                    </div>
-                  )}
                 </motion.div>
               </AnimatePresence>
             </div>
-
-            {/* Right Column: Small Preview (Desktop Only) remains same */}
-            <div className="hidden xl:block w-[400px] shrink-0">
+            {/* Right Column: Small Preview (Desktop Only) */}
+            <div className="hidden xl:block w-[480px] shrink-0">
                <div className="sticky top-6">
-                  <div className="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm p-2 rounded-xl border border-slate-300 dark:border-slate-700 shadow-lg dark:shadow-xl transition-colors">
-                      {/* Zoom Controls */}
-                      <div className="flex justify-between items-center mb-2 px-2">
-                           <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Preview</div>
-                           <div className="flex items-center gap-1 bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-1 transition-colors">
+                  {/* Container matching screenshot: soft border, white/gray bg, rounded-2xl */}
+                  <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm transition-colors">
+                      {/* Zoom Controls Header */}
+                      <div className="flex justify-between items-center mb-4 px-1">
+                           <div className="flex items-center gap-1.5">
+                               <h3 className="text-lg font-bold text-slate-800 dark:text-white">Preview</h3>
+                               <div className="relative group cursor-pointer text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                                   <HelpCircle size={15} />
+                                   <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-48 p-2 bg-slate-800 text-white text-[10px] rounded shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-30 leading-snug">
+                                       This is a live pixel-perfect representation of your printed A4 document.
+                                   </div>
+                               </div>
+                           </div>
+                           
+                           {/* Screenshot-style Control Pills */}
+                           <div className="flex items-center gap-2">
                                <button 
                                   onClick={() => setIsHandMode(!isHandMode)} 
-                                  className={`p-1 rounded transition-colors ${isHandMode ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'}`} 
+                                  className={`flex items-center gap-1 px-2.5 py-1.5 border text-xs font-semibold rounded-lg transition-all shadow-sm ${
+                                      isHandMode 
+                                          ? 'bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-400' 
+                                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-750'
+                                  }`}
                                   title="Pan Tool"
                                >
-                                   <Hand size={14} />
+                                   <Hand size={13} />
+                                   <span>Pan</span>
                                </button>
-                               <div className="w-px h-3 bg-slate-300 dark:bg-slate-700 mx-1"></div>
-                               <button onClick={handleZoomOut} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-600 dark:text-slate-400" title="Zoom Out">
-                                   <ZoomOut size={14} />
+
+                               <button 
+                                  onClick={handleZoomOut} 
+                                  className="flex items-center gap-1 px-2.5 py-1.5 border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 rounded-lg transition-all shadow-sm text-xs font-semibold dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-750" 
+                                  title="Zoom Out"
+                               >
+                                   <ZoomOut size={13} />
+                                   <span>Out</span>
                                </button>
-                               <span className="text-xs font-medium w-8 text-center text-slate-700 dark:text-slate-300">{Math.round(previewScale * 100)}%</span>
-                               <button onClick={handleZoomIn} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-600 dark:text-slate-400" title="Zoom In">
-                                   <ZoomIn size={14} />
+
+                               <div className="px-2 py-1.5 border border-slate-200 bg-white text-slate-700 rounded-lg text-xs font-bold shadow-sm dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 min-w-[45px] text-center">
+                                   {Math.round(previewScale * 100)}%
+                               </div>
+
+                               <button 
+                                  onClick={handleZoomIn} 
+                                  className="flex items-center gap-1 px-2.5 py-1.5 border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 rounded-lg transition-all shadow-sm text-xs font-semibold dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-750" 
+                                  title="Zoom In"
+                               >
+                                   <ZoomIn size={13} />
+                                   <span>In</span>
                                </button>
-                               <div className="w-px h-3 bg-slate-300 dark:bg-slate-700 mx-1"></div>
-                               <button onClick={handleZoomReset} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-600 dark:text-slate-400" title="Reset Zoom">
-                                   <RotateCcw size={14} />
+
+                               <button 
+                                  onClick={handleZoomReset} 
+                                  className="flex items-center gap-1 px-2.5 py-1.5 border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 rounded-lg transition-all shadow-sm text-xs font-semibold dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-750" 
+                                  title="Reset Zoom"
+                               >
+                                   <RotateCcw size={13} />
+                                   <span>Reset</span>
                                </button>
                            </div>
                       </div>
                       
+                      {/* Document Viewer Container - styling matching screenshot gray area */}
                       <div 
                         ref={previewContainerRef}
                         onMouseDown={handleMouseDown}
                         onMouseUp={handleMouseUp}
                         onMouseLeave={handleMouseLeave}
                         onMouseMove={handleMouseMove}
-                        className={`bg-slate-200 dark:bg-slate-900 rounded-lg overflow-auto no-scrollbar relative shadow-inner h-[600px] w-full flex items-start justify-center border border-slate-300/50 dark:border-slate-700/50 transition-colors ${isHandMode ? 'cursor-grab' : 'cursor-default'}`}
+                        className={`bg-slate-100/50 dark:bg-slate-950/40 rounded-xl overflow-auto no-scrollbar relative shadow-inner h-[600px] w-full flex items-start justify-center border border-slate-200 dark:border-slate-800 transition-colors ${isHandMode ? 'cursor-grab' : 'cursor-default'}`}
                         style={{ scrollBehavior: isDragging.current ? 'auto' : 'smooth' }}
                       >
-                          <div id="preview-wrapper" className="origin-top transition-transform duration-200 ease-out" style={{ transform: `scale(${previewScale})` }}>
-                              <Preview data={data} />
-                          </div>
+                           <div id="preview-wrapper" className="origin-top transition-transform duration-200 ease-out pt-4 pb-4" style={{ transform: `scale(${previewScale})` }}>
+                               <Preview data={data} />
+                           </div>
                       </div>
                   </div>
                   <div className="text-center mt-3 text-sm text-slate-600 dark:text-slate-500 font-medium flex items-center justify-center gap-2">
@@ -1240,26 +1216,7 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
         </div>
       </div>
 
-      {/* Footer / Navigation Buttons */}
-      <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/90 backdrop-blur flex justify-between items-center z-10 shrink-0 transition-colors duration-300">
-         <button 
-            onClick={goToPrev}
-            disabled={!prevSection}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-         >
-            <ChevronLeft size={18} />
-            {prevSection ? `Back: ${prevSection.label}` : 'Back'}
-         </button>
-         
-         {nextSection && (
-            <button 
-                onClick={goToNext}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md dark:shadow-lg dark:shadow-blue-900/30 transition-all hover:shadow-lg dark:hover:shadow-xl"
-            >
-                {`Next: ${nextSection.label}`} <ArrowRight size={18} />
-            </button>
-         )}
-      </div>
+
 
       {/* Photo Advice Modal */}
       <AnimatePresence>
