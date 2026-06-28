@@ -117,6 +117,7 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
   const [previewScale, setPreviewScale] = useState(0.5);
   const [showPhotoAdvice, setShowPhotoAdvice] = useState(false);
   const [isHandMode, setIsHandMode] = useState(false);
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const previewContainerRef = useRef<HTMLDivElement>(null);
   
@@ -124,8 +125,6 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
   const isDragging = useRef(false);
   const startX = useRef(0);
   const startY = useRef(0);
-  const scrollLeft = useRef(0);
-  const scrollTop = useRef(0);
 
   useEffect(() => {
     if (scrollContainerRef.current) {
@@ -144,10 +143,8 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!isHandMode || !previewContainerRef.current) return;
     isDragging.current = true;
-    startX.current = e.pageX - previewContainerRef.current.offsetLeft;
-    startY.current = e.pageY - previewContainerRef.current.offsetTop;
-    scrollLeft.current = previewContainerRef.current.scrollLeft;
-    scrollTop.current = previewContainerRef.current.scrollTop;
+    startX.current = e.clientX - panOffset.x;
+    startY.current = e.clientY - panOffset.y;
     previewContainerRef.current.style.cursor = 'grabbing';
   };
 
@@ -168,12 +165,9 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging.current || !isHandMode || !previewContainerRef.current) return;
     e.preventDefault();
-    const x = e.pageX - previewContainerRef.current.offsetLeft;
-    const y = e.pageY - previewContainerRef.current.offsetTop;
-    const walkX = (x - startX.current) * 1.5; 
-    const walkY = (y - startY.current) * 1.5;
-    previewContainerRef.current.scrollLeft = scrollLeft.current - walkX;
-    previewContainerRef.current.scrollTop = scrollTop.current - walkY;
+    const newX = e.clientX - startX.current;
+    const newY = e.clientY - startY.current;
+    setPanOffset({ x: newX, y: newY });
   };
 
   // --- Update Helpers ---
@@ -422,6 +416,7 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
   };
   const handleZoomReset = () => {
       setPreviewScale(0.5);
+      setPanOffset({ x: 0, y: 0 });
   };
 
 
@@ -1198,10 +1193,10 @@ export const Editor: React.FC<EditorProps> = ({ data, onChange, resumeName }) =>
                         onMouseUp={handleMouseUp}
                         onMouseLeave={handleMouseLeave}
                         onMouseMove={handleMouseMove}
-                        className={`bg-slate-100/50 dark:bg-slate-950/40 rounded-xl overflow-auto no-scrollbar relative shadow-inner h-[600px] w-full flex items-start justify-center border border-slate-200 dark:border-slate-800 transition-colors ${isHandMode ? 'cursor-grab' : 'cursor-default'}`}
-                        style={{ scrollBehavior: isDragging.current ? 'auto' : 'smooth' }}
+                        className={`bg-slate-100/50 dark:bg-slate-950/40 rounded-xl overflow-hidden no-scrollbar relative shadow-inner h-[600px] w-full flex items-start justify-center border border-slate-200 dark:border-slate-800 transition-colors ${isHandMode ? 'cursor-grab' : 'cursor-default'}`}
+                        style={{ scrollBehavior: 'auto' }}
                       >
-                           <div id="preview-wrapper" className="origin-top transition-transform duration-200 ease-out pt-4 pb-4" style={{ transform: `scale(${previewScale})` }}>
+                           <div id="preview-wrapper" className="origin-top pt-4 pb-4 select-none" style={{ transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${previewScale})` }}>
                                <Preview data={data} />
                            </div>
                       </div>
